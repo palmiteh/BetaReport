@@ -72,7 +72,7 @@
          \vskip2cm
          February 9th, 2016\\
          \vskip2cm
-         The HawkEyed Crew - Group 8\\ 
+         The HawkEyed Crew - Group 4\\ 
          \vskip1cm
          Hailey Palmiter\\
          \vskip1cm
@@ -119,34 +119,34 @@ It would be possible to continue development on the TK1, but it does not seem to
    Our next focus was on getting two cameras' video streams displayed to a monitor. We prioritize this before moving on to fixing the quality of the output or adding custom filters. We decided that using two USB 3.0 cameras would be the best way to progress in order to accomplish alpha release goals. But first, we had to get the USB 3.0 PointGrey camera that Rockwell Collins had supplied for us working. Once the camera was working, we were able to display the stream from the PointGrey camera on our TV. We were even able to apply some built-in filters from OpenCV. Now that we had this capability, we discussed the need for additional cameras that our sponsor, Carlo has offered for us to use.\\
    \par
 Our next major goal after getting the working TX1 was to get a second camera. This would allow us to be able to begin developing our software to handle processing of multiple video streams into one output. Multiple cameras are a requirement that is needed for us to be able to have a complete deliverable at the beta release. We were able to get in contact with Carlo, and set-up a meeting allowing him to (very generously) loan us two more PointGrey cameras with additional lenses as well. A current list of all of our hardware can be found below. \\
-  	\\Cameras:  
+  	\\Cameras (figure 1):  
     		\begin{itemize}
 		\item GS3-U3-41C6NIR-C (PointGrey/GrassHopper)
 		\item GS3-U3-41C6C-C
 		\item GS3-U3-23S6C-C\\
-
 		\end{itemize}
-
-	Lenses: 
+	Lenses (figure 1): 
 		\begin{itemize}
 		\item EVS-3000 
 		\item 2 x LS-TP-08 (Standard)\\
 		\end{itemize}
-	Single Board Computers: 
-		\begin{itemize}
-		\item Jetson TK1
-		\item Jetson TX1 developer kit with onboard camera\\
-		\end{itemize}
-	Extras: 
-		\begin{itemize}
-		\item Camera mount
-		\item 3 x USB 3.0 cables
-		\item 1080p monitor (TV)\\
-		\end{itemize}
+		
 \begin{figure}[!ht]
   \caption{The 3 cameras provided by Rockwell Collins on a mount}
 	  \centering
 		    \includegraphics[width=0.6\textwidth,natwidth=610,natheight=642]{images/IMG_20160210_131527329.jpg}
+				\end{figure}
+				
+	Single Board Computers: 
+		\begin{itemize}
+		\item Jetson TK1 (figure 2) 
+		\item Jetson TX1 developer kit with onboard camera (figure 3 and 4)\\
+		\end{itemize}
+
+\begin{figure}[!ht]
+  \caption{The Jetson TK1}
+	  \centering
+		    \includegraphics[width=0.6\textwidth,natwidth=610,natheight=642]{images/rot-9.jpg}
 				\end{figure}
 \begin{figure}[!ht]
   \caption{The Jetson TX1}
@@ -154,14 +154,22 @@ Our next major goal after getting the working TX1 was to get a second camera. Th
 		    \includegraphics[width=0.6\textwidth,natwidth=610,natheight=642]{images/rot-8.jpg}
 				\end{figure}
 \begin{figure}[!ht]
-  \caption{The Jetson TK1}
-	  \centering
-		    \includegraphics[width=0.6\textwidth,natwidth=610,natheight=642]{images/rot-9.jpg}
-				\end{figure}
-\begin{figure}[!ht]
-  \caption{The on-board camera for the TX1 }
+  \caption{The on-board camera for the TX1}
 	  \centering
 		    \includegraphics[width=0.6\textwidth,natwidth=610,natheight=642]{images/rot-3.jpg}
+				\end{figure}
+	Extras: 
+		\begin{itemize}
+		\item 2-port USB 3.0 supersede PCIe Card (figure 5)
+		\item Camera mount
+		\item 3 x USB 3.0 cables
+		\item 1080p monitor (TV)\\
+		\end{itemize}
+
+\begin{figure}[!ht]
+  \caption{2-port USB 3.0 supersede PCIe Card}
+	  \centering
+		    \includegraphics[width=0.6\textwidth,natwidth=610,natheight=642]{images/PCIe.jpg}
 				\end{figure}
 
    \subsubsection{System}
