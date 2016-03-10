@@ -143,27 +143,6 @@ Our next major goal after getting the working TX1 was to get a second camera. Th
 		\item 3 x USB 3.0 cables
 		\item 1080p monitor (TV)\\
 		\end{itemize}
-\begin{figure}[!ht]
-  \caption{The 3 cameras provided by Rockwell Collins on a mount}
-	  \centering
-		    \includegraphics[width=0.6\textwidth,natwidth=610,natheight=642]{images/IMG_20160210_131527329.jpg}
-				\end{figure}
-\begin{figure}[!ht]
-  \caption{The Jetson TX1}
-	  \centering
-		    \includegraphics[width=0.6\textwidth,natwidth=610,natheight=642]{images/rot-8.jpg}
-				\end{figure}
-\begin{figure}[!ht]
-  \caption{The Jetson TK1}
-	  \centering
-		    \includegraphics[width=0.6\textwidth,natwidth=610,natheight=642]{images/rot-9.jpg}
-				\end{figure}
-\begin{figure}[!ht]
-  \caption{The on-board camera for the TX1 }
-	  \centering
-		    \includegraphics[width=0.6\textwidth,natwidth=610,natheight=642]{images/rot-3.jpg}
-				\end{figure}
-
    \subsubsection{System}
    During the wait of obtaining two more Point Grey cameras, we implemented a full modular software architecture for our vision system. Our software reads a JSON configuration file to set-up the modules. This allows for more flexibility with the use of different cameras and their software. It also gives us the ability to implement different filter modules and only apply the ones we want at a specific time. It could handle more flexibility with the use of different types of cameras only being used at specific times or for specific reasons. For example, a long range camera may only be activated when needed to find the runway from a given distance. It could then be turned on and processed when needed, but deactivated to increase the performance when it is not needed.\\ 
 \par
@@ -286,18 +265,8 @@ A JSON configuration for our program consists of three sections: The ''modules''
 	}
    \end{lstlisting}
  \par 
-   In this example, we define two camera inputs, a combination algorithm module (as defined above in the previous code example), and an output window module. The start section tells the program that it needs to run both camera inputs, which it does separately. The code immediately after the start section tells the program to connect output 0 of inputModule1 to input 0 of MyModule\_instance, output 0 of inputModule2 to input 1 of MyModule\_instance, and the output of MyModule\_instance to the display module. When the program is executed, it will capture input from both cameras, combine it using MyModule, and then display it to a window. This configuration system makes it easy to implement complex networks of algorithm modules, and makes it so that any reconfiguration of the modules does not require a recompile of the software. This also defines the names used by the logger, in this case inputModule1, inputModule2, MyModule\_instance, and outputModule. These names can be anything the user decides to define, as long as they are consistent.
-
-\begin{figure}[!ht]
-  \caption{Video output from the TX1 using a PointGrey camera with an EVS-3000 lens attached}
-	  \centering
-		    \includegraphics[width=0.6\textwidth,natwidth=610,natheight=642]{images/vlcsnap-2016-02-11-17h42m53s150.png}
-				\end{figure}
-\begin{figure}[!ht]
-  \caption{Video output from the TX1 using a PointGrey camera with a LS-TP-08 lens attached}
-	  \centering
-		    \includegraphics[width=0.6\textwidth,natwidth=610,natheight=642]{images/vlcsnap-2016-02-11-17h42m30s486.png}
-				\end{figure}
+   In this example, we define two camera inputs, a combination algorithm module (as defined above in the previous code example), and an output window module. The start section tells the program that it needs to run both camera inputs, which it does separately. The code immediately after the start section tells the program to connect output 0 of inputModule1 to input 0 of MyModule\_instance, output 0 of inputModule2 to input 1 of MyModule\_instance, and the output of MyModule\_instance to the display module. When the program is executed, it will capture input from both cameras, combine it using MyModule, and then display it to a window. This configuration system makes it easy to implement complex networks of algorithm modules, and makes it so that any reconfiguration of the modules does not require a recompile of the software. This also defines the names used by the logger, in this case inputModule1, inputModule2, MyModule\_instance, and outputModule. These names can be anything the user decides to define, as long as they are .
+	 \includegraphics[]{test.jpg}
 
    \end{document}
 
