@@ -115,7 +115,7 @@ It would be possible to continue development on the TK1, but it does not seem to
    \subsubsection{Video Output}
    Our first step exploring the Jetson TX1's capabilities was getting a working video output from the onboard camera. We were able to display this image at 1080p with the option of 30 or 60 frames per second. This video stream used embedded GStreamer code to transform the image buffer generated from the camera into a Video4Linux compatible format, which is a widely compatible format. The image was then read with a standard linux application and displayed to the monitor. After we were able to get the video output from the PointGrey cameras working we implemented two basic edge detection functions using several of OpenCV's built-in functions to gain familiarity with the OpenCV API.\\
    \par
-   With further development in OpenCV we found that our visual frame rate was not matching the metrics that were being displayed to the screen. We were capturing and processing images at 30 frames per second, but that was not the resulting visual display feed. The output stream had significant lag. Once we found that the bottle neck was happening when frames were being copied from the CPU to the GPU we knew we needed to change out approach. We have left the capture and processing system in place, but simply replaced the way we display the images, giving us more control over the display process. We have changed development to a low level API that allows us to directly manipulate the frames on the GPU. This API is called Cuda, which is a window system based on OpenGL that allows us to have zero copy. Zero copy is implemented using GLUT, which allows us to write the camera images directly to a buffer that is read by the GPU because the GPU and the CPU share memory. We now have eliminated the need for slow copy procedures, resulting in multiple camera inputs stitched together into one output stream with very high frame rate capabilities that are consistent. Currently we are outputting at roughly 35 frames per second with one camera, 33 frames per second with two cameras, and 31 frames per second with three cameras. The video quality is much better than when using OpenCV and actually appears to be at the output frame rate that is being displayed.
+   With further development in OpenCV we found that our visual frame rate was not matching the metrics that were being displayed to the screen. We were capturing and processing images at 30 frames per second, but that was not the resulting visual display feed. The output stream had significant lag. Once we found that the bottle neck was happening when frames were being copied from the CPU to the GPU we knew we needed to change out approach. We have left the capture and processing system in place, but simply replaced the way we display the images, giving us more control over the display process. We have changed development to a low level API that allows us to directly manipulate the frames on the GPU. This API is called Cuda, which is a window system based on OpenGL that allows us to have zero copy. Zero copy is implemented using GLUT, which allows us to write the camera images directly to a buffer that is read by the GPU because the GPU and the CPU share memory. We now have eliminated the need for slow copy procedures, resulting in multiple camera inputs stitched together into one output stream with very high frame rate capabilities that are consistent. Currently we are outputting at roughly 35 frames per second with one camera, 33 frames per second with two cameras, and 31 frames per second with three cameras. The video quality is much better than when using OpenCV and actually appears to be at the output frame rate that is being displayed.\\
    
    \subsubsection{Hardware}
    Our next focus was on getting two cameras' video streams displayed to a monitor. We prioritize this before moving on to fixing the quality of the output or adding custom filters. We decided that using two USB 3.0 cameras would be the best way to progress in order to accomplish alpha release goals. But first, we had to get the USB 3.0 PointGrey camera that Rockwell Collins had supplied for us working. Once the camera was working, we were able to display the stream from the PointGrey camera on our TV. We were even able to apply some built-in filters from OpenCV. Now that we had this capability, we discussed the need for additional cameras that our sponsor, Carlo has offered for us to use.\\
@@ -144,10 +144,8 @@ Our next major goal after getting the working TX1 was to get a second camera. Th
 		\item Jetson TK1 (figure 2) 
 		\item Jetson TX1 developer kit with onboard camera (figure 3 and 4)\\
 		\end{itemize}
-   \subsubsection{System}
-   During the wait of obtaining two more Point Grey cameras, we implemented a full modular software architecture for our vision system. Our software reads a JSON configuration file to set-up the modules. This allows for more flexibility with the use of different cameras and their software. It also gives us the ability to implement different filter modules and only apply the ones we want at a specific time. It could handle more flexibility with the use of different types of cameras only being used at specific times or for specific reasons. For example, a long range camera may only be activated when needed to find the runway from a given distance. It could then be turned on and processed when needed, but deactivated to increase the performance when it is not needed.\\ 
-
-\begin{figure}[!ht]
+ 
+ \begin{figure}[!ht]
   \caption{The Jetson TK1}
 	  \centering
 		    \includegraphics[width=0.6\textwidth,natwidth=610,natheight=642]{images/rot-9.jpg}
@@ -170,26 +168,6 @@ Our next major goal after getting the working TX1 was to get a second camera. Th
 		\item 1080p monitor (TV)\\
 		\end{itemize}
 
-\begin{figure}[!ht]
-  \caption{The 3 cameras provided by Rockwell Collins on a mount}
-	  \centering
-		    \includegraphics[width=0.6\textwidth]{images/IMG_20160210_131527329.jpg}
-				\end{figure}
-\begin{figure}[!ht]
-  \caption{The Jetson TX1}
-	  \centering
-		    \includegraphics[width=0.6\textwidth]{images/rot-8.jpg}
-				\end{figure}
-\begin{figure}[!ht]
-  \caption{The Jetson TK1}
-	  \centering
-		    \includegraphics[width=0.6\textwidth]{images/rot-9.jpg}
-				\end{figure}
-\begin{figure}[!ht]
-  \caption{The on-board camera for the TX1 }
-	  \centering
-		    \includegraphics[width=0.6\textwidth]{images/rot-3.jpg}
-				\end{figure}
 \begin{figure}[!ht]
   \caption{2-port USB 3.0 supersede PCIe Card}
 	  \centering
