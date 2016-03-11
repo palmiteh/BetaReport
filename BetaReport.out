@@ -1,0 +1,20 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}
+\BOOKMARK [1][-]{section.2}{Current Progress}{}
+\BOOKMARK [2][-]{subsection.2.1}{Refined Requirements Document}{section.2}
+\BOOKMARK [2][-]{subsection.2.2}{Jetson TK1}{section.2}
+\BOOKMARK [2][-]{subsection.2.3}{Jetson TX1}{section.2}
+\BOOKMARK [3][-]{subsubsection.2.3.1}{Video Output}{subsection.2.3}
+\BOOKMARK [3][-]{subsubsection.2.3.2}{Hardware}{subsection.2.3}
+\BOOKMARK [3][-]{subsubsection.2.3.3}{System}{subsection.2.3}
+\BOOKMARK [3][-]{subsubsection.2.3.4}{Modular Software System}{subsection.2.3}
+\BOOKMARK [1][-]{section.3}{Problems That Impeded Progress}{}
+\BOOKMARK [2][-]{subsection.3.1}{Jetson TX1 Kernel Recompile}{section.3}
+\BOOKMARK [2][-]{subsection.3.2}{Jetson TX1 Manufacture Error}{section.3}
+\BOOKMARK [2][-]{subsection.3.3}{Jetson TX1 and PointGrey Camera Compatibility}{section.3}
+\BOOKMARK [2][-]{subsection.3.4}{OpenCV Limiting Frame Rate}{section.3}
+\BOOKMARK [1][-]{section.4}{Preliminary Results}{}
+\BOOKMARK [2][-]{subsection.4.1}{Implications of Preliminary Results}{section.4}
+\BOOKMARK [1][-]{section.5}{What is left to do}{}
+\BOOKMARK [2][-]{subsection.5.1}{Beta Stage}{section.5}
+\BOOKMARK [2][-]{subsection.5.2}{Stretch Goals}{section.5}
+\BOOKMARK [1][-]{section.6}{Interesting Piece of Code}{}
