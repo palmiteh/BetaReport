@@ -113,7 +113,7 @@ It would be possible to continue development on the TK1, but it does not seem to
    After discovering a manufacturer error on the original TX1s, we continued development on the TK1 until the new, fully functional, TX1 arrived. This was the point when development shifted from the TK1 to the TX1.\\ 
    
    \subsubsection{Video Output}
-   The first step with working with the Jetson TX1 was to get a working video output from the onboard camera, which was successful. We were able to display the image at 1080p with the option of 30 or 60 frames per second. This video stream used embedded GStreamer code to transform the image buffer generated from the camera into a Video4Linux compatible format, which is a widely compatible format with a lot of software. The image was then read with a built-in web application and displayed to the monitor. After we were able to get the video output from the PointGrey cameras working we implemented two basic edge detection functions using several of OpenCV's built-in functions to gain familiarity with the OpenCV API.\\
+   Our first step exploring the Jetson TX1's capabilities was getting a working video output from the onboard camera. We were able to display this image at 1080p with the option of 30 or 60 frames per second. This video stream used embedded GStreamer code to transform the image buffer generated from the camera into a Video4Linux compatible format, which is a widely compatible format. The image was then read with a standard linux application and displayed to the monitor. After we were able to get the video output from the PointGrey cameras working we implemented two basic edge detection functions using several of OpenCV's built-in functions to gain familiarity with the OpenCV API.\\
    \par
    With further development in OpenCV we found that our visual frame rate was not matching the metrics that were being displayed to the screen. We were capturing and processing images at 30 frames per second, but that was not the resulting visual display feed. The output stream had significant lag. Once we found that the bottle neck was happening when frames were being copied from the CPU to the GPU we knew we needed to change out approach. We have left the capture and processing system in place, but simply replaced the way we display the images, giving us more control over the display process. We have changed development to a low level API that allows us to directly manipulate the frames on the GPU. This API is called Cuda, which is a window system based on OpenGL that allows us to have zero copy. Zero copy is implemented using GLUT, which allows us to write the camera images directly to a buffer that is read by the GPU because the GPU and the CPU share memory. We now have eliminated the need for slow copy procedures, resulting in multiple camera inputs stitched together into one output stream with very high frame rate capabilities that are consistent. Currently we are outputting at roughly 35 frames per second with one camera, 33 frames per second with two cameras, and 31 frames per second with three cameras. The video quality is much better than when using OpenCV and actually appears to be at the output frame rate that is being displayed.
    
@@ -144,6 +144,8 @@ Our next major goal after getting the working TX1 was to get a second camera. Th
 		\item Jetson TK1 (figure 2) 
 		\item Jetson TX1 developer kit with onboard camera (figure 3 and 4)\\
 		\end{itemize}
+   \subsubsection{System}
+   During the wait of obtaining two more Point Grey cameras, we implemented a full modular software architecture for our vision system. Our software reads a JSON configuration file to set-up the modules. This allows for more flexibility with the use of different cameras and their software. It also gives us the ability to implement different filter modules and only apply the ones we want at a specific time. It could handle more flexibility with the use of different types of cameras only being used at specific times or for specific reasons. For example, a long range camera may only be activated when needed to find the runway from a given distance. It could then be turned on and processed when needed, but deactivated to increase the performance when it is not needed.\\ 
 
 \begin{figure}[!ht]
   \caption{The Jetson TK1}
@@ -169,15 +171,35 @@ Our next major goal after getting the working TX1 was to get a second camera. Th
 		\end{itemize}
 
 \begin{figure}[!ht]
+  \caption{The 3 cameras provided by Rockwell Collins on a mount}
+	  \centering
+		    \includegraphics[width=0.6\textwidth]{images/IMG_20160210_131527329.jpg}
+				\end{figure}
+\begin{figure}[!ht]
+  \caption{The Jetson TX1}
+	  \centering
+		    \includegraphics[width=0.6\textwidth]{images/rot-8.jpg}
+				\end{figure}
+\begin{figure}[!ht]
+  \caption{The Jetson TK1}
+	  \centering
+		    \includegraphics[width=0.6\textwidth]{images/rot-9.jpg}
+				\end{figure}
+\begin{figure}[!ht]
+  \caption{The on-board camera for the TX1 }
+	  \centering
+		    \includegraphics[width=0.6\textwidth]{images/rot-3.jpg}
+				\end{figure}
+\begin{figure}[!ht]
   \caption{2-port USB 3.0 supersede PCIe Card}
 	  \centering
 		    \includegraphics[width=0.6\textwidth,natwidth=610,natheight=642]{images/PCIe.jpg}
 				\end{figure}
 
    \subsubsection{Modular Software System}
-   During the wait of obtaining two more Point Grey cameras, we implemented a full modular software architecture for our vision system. Our software reads a JSON configuration file to set-up the modules. Each module can be comprised of either different camera softwares or different types of filters. This module system allows for more flexibility with the use of different cameras and their software. It also gives us the ability to implement different filter modules and only apply the ones we want at a specific time. The system could handle more flexibility with the use of different types of cameras only being used at specific times or for specific reasons to conserve power consumption. An example of this system could be that one camera is capturing the normal view image while an infrared camera is detecting bright spots (i.e. runway lights). Once the camera filter has detected the bright lights, it then draws circles around each spot to make a clear indication of where the runway is. Then this image will be overlaid onto the normal image to give the pilots the best possible accuracy and location of the runway. Another example could be that a long range camera may only be activated when needed to find the runway from a given distance. It could then be turned on and processed when needed, but deactivated to increase the performance when it is not needed. The impact of the flexibility of this modular system is limitless with being able to assist is safe flight travel in almost all situations.\\ 
+   While we were waiting for two more Point Grey cameras, we implemented a modular software architecture for our vision system. Our software reads a JSON configuration file to set-up the modules. Each module is comprised of a series of camera captures, filters, and sinks. This module system allows for flex without the need for recompilation, which can be complex and time consuming. It also gives us the ability to implement different filter modules and quickly apply only desired filters. We have plans to expand the system so that it could intelligently use different types of cameras only for specific reasons to conserve power consumption. An example of this is using the normal camera until the image becomes too dark to see, turining on a night-vision camera. Another example could be that a long range camera may only be activated when needed to find the runway from a given distance. It could then be turned on and processed when needed, but deactivated to increase the performance when it is not needed. We also want to implement multiple camera overlay. An example of this system is having one camera capture the normal image while an infrared camera is detecting bright spots (i.e. runway lights). Once the camera filter has detected the bright lights, it then draws circles around each spot to make a clear indication of where a runway is. Then this image will be overlaid onto the normal image to give the pilots the best possible accuracy and location of the runway. The impact of the flexibility of this modular system is limitless with being able to assist is safe flight travel in almost all situations.\\ 
 \par
-The modular system we have built was first able to output a static image which allowed us to demonstrate that the system was working. We then created a module to handle input from the PointGrey camera by implementing its given software. This allows us to be able to interact with multiple PointGrey cameras. Now that we have received the USB 3.0 PCIe card, we have been able to implement up to three cameras at once over USB 3.0, all overlaying there video streams on top of each other to provide one output stream. Currently we have it set up where one camera is providing 50\% of the display output and the other two are split by 25\% each. When only two cameras are running, the video output is provided with a split 50\% input from the cameras equally. We have also added line detection filter, which can run without dropping our frame rate any significant amount. The ability and ease of being able to switch between how many cameras are running and applying filters to each has proven the efficiency of our modular system. 
+We first explored the modular system by first being able to output a static image demonstrating that the system was working. We then created a module to handle input from the PointGrey camera by implementing its given software. This allows us to be able to interact with multiple PointGrey cameras. Now that we have received the USB 3.0 PCIe card, we have been able to implement up to three cameras at once over USB 3.0, all overlaying their video streams on top of each other to provide one output stream. Currently we have it set up so that one camera is providing 50\% of the display output and the other two are split by 25\% each. When only two cameras are running, the video output is provided with a split 50\% input from the cameras equally. We have also added line detection filter, which can run without dropping our frame rate any significant amount. The ability and ease of being able to switch between how many cameras are running and applying filters to each has proven the efficiency of our modular system. 
    
    \section{Problems That Impeded Progress}
    \subsection{Jetson TX1 Kernel Recompile}
@@ -190,7 +212,7 @@ The modular system we have built was first able to output a static image which a
    Once we were able to interact with the USB 3.0 PointGrey camera and the Jetson TX1, we ran into the issue of getting the TX1 to register the camera and to display an image. We were finally able to get a video output from the PointGrey camera after realizing we were missing two big elements. To fix the issue, we needed to recompile the Linux kernel to increase the USB buffer size to accommodate for higher resolution image capturing from the camera, and acquired the proper camera software needed from PointGrey directly to interface between the proprietary camera API and OpenCV.
    
    \subsection{OpenCV Limiting Frame Rate}
-   With further development in OpenCV we found that our visual frame rate was not matching the metrics that were being displayed to the screen. We were capturing and processing images at 30 frames per second, but that was not the resulting visual display feed. The output stream had significant lag. Once we found that the bottle neck was happening when frames were being copied from the CPU to the GPU we knew we needed to change out approach. We have left the capture and processing system in place, but simply replaced the way we display the images, giving us more control over the display process. We have changed development to a low level API that allows us to directly manipulate the frames on the GPU. This API is called Cuda, which is a window system based on OpenGL that allows us to have zero copy. Zero copy is implemented using GLUT, which allows us to write the camera images directly to a buffer that is read by the GPU because the GPU and the CPU share memory. We now have eliminated the need for slow copy procedures, resulting in multiple camera inputs stitched together into one output stream with very high frame rate capabilities that are consistent.  
+   After further development in OpenCV we found that our visual frame rate was not matching the framerate that were being logged. The logs were saying we were outputting 30 fps, but the video was obviously less than that. The output stream had significant lag. We determined that this lag was due to a bottle neck when frames were being copied from the CPU to the GPU. Fixing this in OpenCV would've taken some serious investigation into OpenCV's code that we didn't have the time for. So, we left the capture and processing system in place, but simply replaced the way we display the images, giving us more control over the display process. We have changed development to a low level API that allows us to directly manipulate the frames on the GPU. This API is called Cuda, which is well supported on the Jetson TX1. We also used GLUT, a window system based on OpenGL. Using these two low level libraries to replace OpenCV allows us to use zero copy. Zero copy means capturing the camera images directly to a buffer that is read by the GPU because the GPU and the CPU share memory. We now have eliminated most of the need for slow copy procedures, resulting in multiple camera inputs stitched together into one output stream with very high frame rate capabilities that are consistent. Performing image format conversions in-place on the GPU will improve performance further.
     
    \section{Preliminary Results}
    Our project requirements specification describes specific latency, frame rate, and resolution requirements in order for our system to be useful. Our end-to-end latency requirement is that it should take less than 100ms to capture video from the camera, process it, and display the outputs. Additionally, we are required to process a minimum of 30 frames per second at 1080p resolution. Our goal is to perform as much image processing as we can while maintaining these performance metrics.\\
@@ -236,22 +258,22 @@ An additional source of latency is the output windows. Currently we are running 
   Our preliminary results leave us with plenty of leeway as far as latency goes. We having taken only about one-fourth of the maximum total latency, however our frame rate is less than optimal. In order to increase our frame rate, we will improve our modular system to function as a buffered, pipelined system that can begin processing a frame while the previous frame is still being processed. We can do this because our latency is well below the required level, and our CPU usage is not yet at its peak. If we can begin loading a new frame while the previous frame is being processed, we will be able to maximize our usage of the USB 3.0 connection to copy new frames into memory. This is currently the slowest process and also provides the most room for improvement, as we are not yet even close to the maximum USB bandwidth. We hope to be able to maintain the same 16-25 ms latency while processing multiple frames from each camera at the same time, though if the latency increases even by doubling we will still be well within our maximum latency limit. We have already tested and seen that performing the basic operation of a colorspace conversion on a frame (which requires operations to be done on every single pixel) adds less than 2ms of latency, so we believe that we will still be able to do quite a bit of image processing within our 100ms time budget.
   
   \section{What is left to do}
-  \subsection{Beta Stage}
-   Since this is our alpha release, we do not have everything completed. The beta stage should be a lot more functional then our current Alpha stage. Although our alpha stage already has at least stub functionality for all the criteria we defined in our requirements document, the beta stage will improve on this and will have implemented working code for these stub functions. Some of the functions that are lacking in the alpha version, but will be completed in the beta version are:\\
-   	\begin{itemize}
-		\item Perform filters and video operations to test the Jetson's GPU.
-		\item Improve frame rate and latency of video stream, or determine that the frame rate will never be acceptable for our criteria.
-		\item Combine the streams in some logical way to demonstrate the Jetson's ability to process multiple video streams.
-		\item Make the program multi-threaded to increase performance for multiple cameras.
-		\item The program should be a viable example as to how to implement the same program on other similar single board computers\\
+	\subsection{Bugs}
+	We currently have a few bugs in the system, causing strange output or system failure.
+	\begin{itemize}
+		\item System freezes during program exit
+		Our system doesn't uninitialize the hardware properly and ends up freezing up the hardware. This shouldn't be difficult to fix.
+		\item Camera output is split
+		Another issue while quitting our application is improper deinitialization of the cameras. This can cause cameras to act strangely on restart, such as partitioning their image output in half before sending it to the screen.
 	\end{itemize}
 	
 	\subsection{Stretch Goals}
 	If time permits, we should have the ability to implement other functions. We have planned some of these out and are considering them as stretch goals. Some of these we have already or are close to meeting:\\
 	\begin{itemize}
-		\item Support a third camera over USB3.
+		\item Improve the framerate of our system (above ~30fps)
 		\item Display our video feed on more than one monitor.
 		\item Perform an object tracking filter.
+		\item Design a real-world model to test our cameras on, such as with miniatures (two of our cameras have macro lenses which would be perfect for miniatures)
 		\item Display video operation metrics on screen. We currently log these to a file, but it would be easier to demonstrate the capabilities of the SBC if we displayed these on the video stream.
 		\item Compare the Jetson with different single board computers. This would mean re-implementing our code on different platforms and comparing their processing speed and hardware capabilities.\\
 	\end{itemize}
@@ -299,17 +321,16 @@ A JSON configuration for our program consists of three sections: The ''modules''
 	}
    \end{lstlisting}
  \par 
-   In this example, we define two camera inputs, a combination algorithm module (as defined above in the previous code example), and an output window module. The start section tells the program that it needs to run both camera inputs, which it does separately. The code immediately after the start section tells the program to connect output 0 of inputModule1 to input 0 of MyModule\_instance, output 0 of inputModule2 to input 1 of MyModule\_instance, and the output of MyModule\_instance to the display module. When the program is executed, it will capture input from both cameras, combine it using MyModule, and then display it to a window. This configuration system makes it easy to implement complex networks of algorithm modules, and makes it so that any reconfiguration of the modules does not require a recompile of the software. This also defines the names used by the logger, in this case inputModule1, inputModule2, MyModule\_instance, and outputModule. These names can be anything the user decides to define, as long as they are consistent.
-
+   In this example, we define two camera inputs, a combination algorithm module (as defined above in the previous code example), and an output window module. The start section tells the program that it needs to run both camera inputs, which it does separately. The code immediately after the start section tells the program to connect output 0 of inputModule1 to input 0 of MyModule\_instance, output 0 of inputModule2 to input 1 of MyModule\_instance, and the output of MyModule\_instance to the display module. When the program is executed, it will capture input from both cameras, combine it using MyModule, and then display it to a window. This configuration system makes it easy to implement complex networks of algorithm modules, and makes it so that any reconfiguration of the modules does not require a recompile of the software. This also defines the names used by the logger, in this case inputModule1, inputModule2, MyModule\_instance, and outputModule. These names can be anything the user decides to define, as long as they are .
 \begin{figure}[!ht]
   \caption{Video output from the TX1 using a PointGrey camera with an EVS-3000 lens attached}
 	  \centering
-		    \includegraphics[width=0.6\textwidth,natwidth=610,natheight=642]{images/vlcsnap-2016-02-11-17h42m53s150.png}
+		    \includegraphics[width=0.6\textwidth]{images/vlcsnap-2016-02-11-17h42m53s150.png}
 				\end{figure}
 \begin{figure}[!ht]
   \caption{Video output from the TX1 using a PointGrey camera with a LS-TP-08 lens attached}
 	  \centering
-		    \includegraphics[width=0.6\textwidth,natwidth=610,natheight=642]{images/vlcsnap-2016-02-11-17h42m30s486.png}
+		    \includegraphics[width=0.6\textwidth]{images/vlcsnap-2016-02-11-17h42m30s486.png}
 				\end{figure}
 
    \end{document}

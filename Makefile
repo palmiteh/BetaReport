@@ -1,4 +1,4 @@
-LATEX	= latex -shell-escape
+LATEX	= pdflatex -shell-escape
 DVIPS	= dvips
 DVIPDF  = dvipdfm
 XDVI	= xdvi -gamma 4
