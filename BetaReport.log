@@ -1,4 +1,4 @@
-This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=pdflatex 2015.10.23)  10 MAR 2016 16:04
+This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=pdflatex 2015.10.23)  10 MAR 2016 16:28
 entering extended mode
 \write18 enabled.
  %&-line parsing enabled.
@@ -642,72 +642,49 @@ Underfull \hbox (badness 10000) in paragraph at lines 170--171
 
  []
 
+File: images/IMG_20160210_131527329.jpg Graphic file (type jpg)
+<use images/IMG_20160210_131527329.jpg>
+File: images/rot-8.jpg Graphic file (type jpg)
+ <use images/rot-8.jpg>
+File: images/rot-9.jpg Graphic file (type jpg)
+
+<use images/rot-9.jpg>
+File: images/rot-3.jpg Graphic file (type jpg)
+ <use images/rot-3.jpg>
 <images/PCIe.jpg, id=146, 5267.68pt x 2963.07pt>
 File: images/PCIe.jpg Graphic file (type jpg)
- <use images/PCIe.jpg> [5 <./images/rot-3.jpg> <./images/PCIe.jpg>]
-Underfull \hbox (badness 10000) in paragraph at lines 199--200
+ <use images/PCIe.jpg> [5 <./images/rot-3.jpg>] [6]
+Underfull \hbox (badness 10000) in paragraph at lines 219--220
+
+ []
+
+[7 <./images/PCIe.jpg>]
+Underfull \hbox (badness 10000) in paragraph at lines 221--222
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 201--202
-
- []
-
-[6]
-Underfull \hbox (badness 10000) in paragraph at lines 203--204
+Underfull \hbox (badness 10000) in paragraph at lines 223--224
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 232--233
+Underfull \hbox (badness 10000) in paragraph at lines 252--253
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 234--235
+Underfull \hbox (badness 10000) in paragraph at lines 254--255
+
+ []
+
+[8]
+Underfull \hbox (badness 10000) in paragraph at lines 272--274
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 243--245
-
- []
-
-[7]
-Underfull \hbox (badness 10000) in paragraph at lines 249--250
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 253--255
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 259--260
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 263--264
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 265--266
-
- []
-
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 267.
-
-(/usr/share/texmf/tex/latex/base/omscmr.fd
-File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
-)
-LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <9> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 267.
-
-Underfull \hbox (badness 10000) in paragraph at lines 276--277
+Underfull \hbox (badness 10000) in paragraph at lines 279--280
 
  []
 
@@ -716,62 +693,67 @@ Underfull \hbox (badness 10000) in paragraph at lines 283--284
 
  []
 
-[8]
+
 Underfull \hbox (badness 10000) in paragraph at lines 285--286
 
  []
 
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 287.
 
-Underfull \hbox (badness 10000) in paragraph at lines 287--288
+(/usr/share/texmf/tex/latex/base/omscmr.fd
+File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <9> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 287.
+
+Underfull \hbox (badness 10000) in paragraph at lines 296--297
 
  []
 
-<test.jpg, id=179, 2963.07pt x 5267.68pt>
-File: test.jpg Graphic file (type jpg)
- <use test.jpg>
-Underfull \hbox (badness 1509) in paragraph at lines 305--307
-[]\OT1/cmr/m/n/10 In this ex-am-ple, we de-fine two cam-era in-puts, a com-bi-n
-a-tion al-go-rithm mod-ule (as de-fined above in
+
+Underfull \hbox (badness 10000) in paragraph at lines 303--304
+
+ []
+
+[9]
+Underfull \hbox (badness 10000) in paragraph at lines 305--306
+
  []
 
 
-Underfull \hbox (badness 1590) in paragraph at lines 305--307
-\OT1/cmr/m/n/10 in-put-Mod-ule2 to in-put 1 of My-Mod-ule[]instance, and the ou
-t-put of My-Mod-ule[]instance to the dis-play
+Underfull \hbox (badness 10000) in paragraph at lines 307--308
+
  []
 
+<images/vlcsnap-2016-02-11-17h42m53s150.png, id=187, 1284.8pt x 722.7pt>
+File: images/vlcsnap-2016-02-11-17h42m53s150.png Graphic file (type png)
 
-Overfull \hbox (2457.1728pt too wide) in paragraph at lines 305--307
-[] 
- []
+<use images/vlcsnap-2016-02-11-17h42m53s150.png>
+<images/vlcsnap-2016-02-11-17h42m30s486.png, id=188, 1284.8pt x 722.7pt>
+File: images/vlcsnap-2016-02-11-17h42m30s486.png Graphic file (type png)
 
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [9]
-Overfull \vbox (4581.10223pt too high) has occurred while \output is active []
-
-
-[10 <./test.jpg>] (./BetaReport.aux) ) 
+<use images/vlcsnap-2016-02-11-17h42m30s486.png> [10] [11 <./images/vlcsnap-201
+6-02-11-17h42m53s150.png (PNG copy)> <./images/vlcsnap-2016-02-11-17h42m30s486.
+png (PNG copy)>] (./BetaReport.aux) ) 
 Here is how much of TeX's memory you used:
- 8432 strings out of 256214
- 115395 string characters out of 1916999
- 316759 words of memory out of 1500000
- 11527 multiletter control sequences out of 10000+200000
+ 8445 strings out of 256214
+ 115841 string characters out of 1916999
+ 314759 words of memory out of 1500000
+ 11531 multiletter control sequences out of 10000+200000
  39510 words of font info for 102 fonts, out of 1200000 for 2000
  645 hyphenation exceptions out of 8191
  33i,7n,58p,1555b,1271s stack positions out of 5000i,500n,6000p,200000b,15000s
-</usr/share/texmf/fonts/type1/bluesky/cm/
-cmbx10.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmbx12.pfb></usr/share/texm
-f/fonts/type1/bluesky/cm/cmbx9.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmc
-sc10.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmr10.pfb></usr/share/texmf/f
-onts/type1/bluesky/cm/cmr7.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmr8.pf
-b></usr/share/texmf/fonts/type1/bluesky/cm/cmr9.pfb></usr/share/texmf/fonts/typ
-e1/bluesky/cm/cmsy7.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmsy9.pfb></us
-r/share/texmf/fonts/type1/bluesky/cm/cmti10.pfb>
-Output written on BetaReport.pdf (11 pages, 25699858 bytes).
+</usr/share/texmf/fonts/type1/bluesky/cm/c
+mbx10.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmbx12.pfb></usr/share/texmf
+/fonts/type1/bluesky/cm/cmbx9.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmcs
+c10.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmr10.pfb></usr/share/texmf/fo
+nts/type1/bluesky/cm/cmr7.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmr8.pfb
+></usr/share/texmf/fonts/type1/bluesky/cm/cmr9.pfb></usr/share/texmf/fonts/type
+1/bluesky/cm/cmsy7.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmsy9.pfb></usr
+/share/texmf/fonts/type1/bluesky/cm/cmti10.pfb>
+Output written on BetaReport.pdf (12 pages, 22332684 bytes).
 PDF statistics:
- 254 PDF objects out of 1000 (max. 8388607)
- 65 named destinations out of 1000 (max. 131072)
- 207 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 266 PDF objects out of 1000 (max. 8388607)
+ 72 named destinations out of 1000 (max. 131072)
+ 212 words of extra memory for PDF output out of 10000 (max. 10000000)
 

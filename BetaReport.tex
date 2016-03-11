@@ -171,6 +171,26 @@ Our next major goal after getting the working TX1 was to get a second camera. Th
 		\end{itemize}
 
 \begin{figure}[!ht]
+  \caption{The 3 cameras provided by Rockwell Collins on a mount}
+	  \centering
+		    \includegraphics[width=0.6\textwidth]{images/IMG_20160210_131527329.jpg}
+				\end{figure}
+\begin{figure}[!ht]
+  \caption{The Jetson TX1}
+	  \centering
+		    \includegraphics[width=0.6\textwidth]{images/rot-8.jpg}
+				\end{figure}
+\begin{figure}[!ht]
+  \caption{The Jetson TK1}
+	  \centering
+		    \includegraphics[width=0.6\textwidth]{images/rot-9.jpg}
+				\end{figure}
+\begin{figure}[!ht]
+  \caption{The on-board camera for the TX1 }
+	  \centering
+		    \includegraphics[width=0.6\textwidth]{images/rot-3.jpg}
+				\end{figure}
+\begin{figure}[!ht]
   \caption{2-port USB 3.0 supersede PCIe Card}
 	  \centering
 		    \includegraphics[width=0.6\textwidth,natwidth=610,natheight=642]{images/PCIe.jpg}
@@ -239,22 +259,22 @@ An additional source of latency is the output windows. Currently we are running 
   Our preliminary results leave us with plenty of leeway as far as latency goes. We having taken only about one-fourth of the maximum total latency, however our frame rate is less than optimal. In order to increase our frame rate, we will improve our modular system to function as a buffered, pipelined system that can begin processing a frame while the previous frame is still being processed. We can do this because our latency is well below the required level, and our CPU usage is not yet at its peak. If we can begin loading a new frame while the previous frame is being processed, we will be able to maximize our usage of the USB 3.0 connection to copy new frames into memory. This is currently the slowest process and also provides the most room for improvement, as we are not yet even close to the maximum USB bandwidth. We hope to be able to maintain the same 16-25 ms latency while processing multiple frames from each camera at the same time, though if the latency increases even by doubling we will still be well within our maximum latency limit. We have already tested and seen that performing the basic operation of a colorspace conversion on a frame (which requires operations to be done on every single pixel) adds less than 2ms of latency, so we believe that we will still be able to do quite a bit of image processing within our 100ms time budget.
   
   \section{What is left to do}
-  \subsection{Beta Stage}
-   Since this is our alpha release, we do not have everything completed. The beta stage should be a lot more functional then our current Alpha stage. Although our alpha stage already has at least stub functionality for all the criteria we defined in our requirements document, the beta stage will improve on this and will have implemented working code for these stub functions. Some of the functions that are lacking in the alpha version, but will be completed in the beta version are:\\
-   	\begin{itemize}
-		\item Perform filters and video operations to test the Jetson's GPU.
-		\item Improve frame rate and latency of video stream, or determine that the frame rate will never be acceptable for our criteria.
-		\item Combine the streams in some logical way to demonstrate the Jetson's ability to process multiple video streams.
-		\item Make the program multi-threaded to increase performance for multiple cameras.
-		\item The program should be a viable example as to how to implement the same program on other similar single board computers\\
+	\subsection{Bugs}
+	We currently have a few bugs in the system, causing strange output or system failure.
+	\begin{itemize}
+		\item System freezes during program exit
+		Our system doesn't uninitialize the hardware properly and ends up freezing up the hardware. This shouldn't be difficult to fix.
+		\item Camera output is split
+		Another issue while quitting our application is improper deinitialization of the cameras. This can cause cameras to act strangely on restart, such as partitioning their image output in half before sending it to the screen.
 	\end{itemize}
 	
 	\subsection{Stretch Goals}
 	If time permits, we should have the ability to implement other functions. We have planned some of these out and are considering them as stretch goals. Some of these we have already or are close to meeting:\\
 	\begin{itemize}
-		\item Support a third camera over USB3.
+		\item Improve the framerate of our system (above ~30fps)
 		\item Display our video feed on more than one monitor.
 		\item Perform an object tracking filter.
+		\item Design a real-world model to test our cameras on, such as with miniatures (two of our cameras have macro lenses which would be perfect for miniatures)
 		\item Display video operation metrics on screen. We currently log these to a file, but it would be easier to demonstrate the capabilities of the SBC if we displayed these on the video stream.
 		\item Compare the Jetson with different single board computers. This would mean re-implementing our code on different platforms and comparing their processing speed and hardware capabilities.\\
 	\end{itemize}
@@ -303,7 +323,16 @@ A JSON configuration for our program consists of three sections: The ''modules''
    \end{lstlisting}
  \par 
    In this example, we define two camera inputs, a combination algorithm module (as defined above in the previous code example), and an output window module. The start section tells the program that it needs to run both camera inputs, which it does separately. The code immediately after the start section tells the program to connect output 0 of inputModule1 to input 0 of MyModule\_instance, output 0 of inputModule2 to input 1 of MyModule\_instance, and the output of MyModule\_instance to the display module. When the program is executed, it will capture input from both cameras, combine it using MyModule, and then display it to a window. This configuration system makes it easy to implement complex networks of algorithm modules, and makes it so that any reconfiguration of the modules does not require a recompile of the software. This also defines the names used by the logger, in this case inputModule1, inputModule2, MyModule\_instance, and outputModule. These names can be anything the user decides to define, as long as they are .
-	 \includegraphics[]{test.jpg}
+\begin{figure}[!ht]
+  \caption{Video output from the TX1 using a PointGrey camera with an EVS-3000 lens attached}
+	  \centering
+		    \includegraphics[width=0.6\textwidth]{images/vlcsnap-2016-02-11-17h42m53s150.png}
+				\end{figure}
+\begin{figure}[!ht]
+  \caption{Video output from the TX1 using a PointGrey camera with a LS-TP-08 lens attached}
+	  \centering
+		    \includegraphics[width=0.6\textwidth]{images/vlcsnap-2016-02-11-17h42m30s486.png}
+				\end{figure}
 
    \end{document}
 
