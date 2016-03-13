@@ -66,3 +66,6 @@ clean:
 # clean:
 # 	 rm -f sample-paper.aux sample-paper.toc sample-paper.bbl sample-paper.dvi *.log sample-paper.out sample-paper.blg
 
+move:
+	chmod a+r BetaReport.pdf
+	cp BetaReport.pdf ~/public_html/

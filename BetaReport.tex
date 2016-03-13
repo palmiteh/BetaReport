@@ -108,8 +108,8 @@
 		\end{itemize}
 	Lenses (figure 1): 
 		\begin{itemize}
-		\item EVS-3000 
-		\item 2 x LS-TP-08 (Standard)\\
+		\item EVS-3000 (figure 6)
+		\item 2 x LS-TP-08 (Standard) (figure 7)\\
 		\end{itemize}
 		
 \begin{figure}[!ht]
@@ -137,7 +137,7 @@
 \begin{figure}[!ht]
   \caption{The on-board camera for the TX1}
 	  \centering
-		    \includegraphics[width=0.6\textwidth,natwidth=610,natheight=642]{images/rot-3.jpg}
+		    \includegraphics[width=0.6\textwidth,natwidth=610,natheight=642]{images/onboardCamera.JPG}
 				\end{figure}
 	Extras: 
 		\begin{itemize}
@@ -242,6 +242,17 @@ After having poor initial results using OpenCV, we decided to completely impleme
 Using CUDA for our image processing system allowed us to meet high performance metrics, as we were able to add new filters with virtually no effect on frame rate or latency. Even a seemingly intensive edge detection algorithm causes a reduction of less than 1 frame per second. However, we were still limited on our frame rate by the input module.The 35-40fps we are now acquiring is acceptable for our requirements, but our cameras are capable of much greater frame rates: up to 166fps at 1080p. By inserting timing measurements into each step in the input module, we were able to determine that the main cause of slowdown is the PointGrey colorspace conversion, which can take up to 30ms to complete depending on the camera. This initially limited us to lower frame rates, but by threading the input module we were able to perform multiple conversions at the same time. This enabled us to achieve much higher frame rates, up to 110fps with a single camera. Our latency increased slightly to about 40ms, but this is still within our 100ms acceptable range.\\
 \par
 Our new CUDA-based system is extremely fast, and enables us to work on more advanced image processing algorithms. Our current software includes multiple combination filters which blend two images together by averaging their color values, as well as a Sobel edge detection filter that was provided by NVIDIA in their CUDA sample code. Even with three camera inputs, two combination filters, and an edge detection filter, we still achieve roughly 35 frames per second without even coming close to our latency requirement.\\
+
+\begin{figure}[!ht]
+  \caption{Video output from the TX1 using a PointGrey camera with an EVS-3000 lens attached}
+	  \centering
+		    \includegraphics[width=0.6\textwidth]{images/vlcsnap-2016-02-11-17h42m53s150.png}
+				\end{figure}
+\begin{figure}[!ht]
+  \caption{Video output from the TX1 using a PointGrey camera with a LS-TP-08 lens attached}
+	  \centering
+		    \includegraphics[width=0.6\textwidth]{images/vlcsnap-2016-02-11-17h42m30s486.png}
+				\end{figure}
   
   \subsection{Implications of Beta Results}
   Now that our frame rate far exceeds our requirement, we can now focus on debugging, increasing stability, and implementing our stretch goals. Our current software works perfectly when it is running, but sometimes it will crash during exit because the GPU cleanup may occur before some of the threads operating on GPU memory have actually stop. Once we fix these issues, we will then focus on additional improvements. We intend to create a CUDA color space conversion to replace the existing one, which should enable us to maximize our frame rate for all cameras. Then we will focus on our stretch goal of implementing a runway detection filter.
@@ -319,16 +330,6 @@ A JSON configuration for our program consists of three sections: The ''modules''
    \end{lstlisting}
  \par 
    In this example, we define two camera inputs, a combination algorithm module (as defined above in the previous code example), and an output window module. The start section tells the program that it needs to run both camera inputs, which it does separately. The code immediately after the start section tells the program to connect output 0 of inputModule1 to input 0 of MyModule\_instance, output 0 of inputModule2 to input 1 of MyModule\_instance, and the output of MyModule\_instance to the display module. When the program is executed, it will capture input from both cameras, combine it using MyModule, and then display it to a window. This configuration system makes it easy to implement complex networks of algorithm modules, and makes it so that any reconfiguration of the modules does not require a recompile of the software. This also defines the names used by the logger, in this case inputModule1, inputModule2, MyModule\_instance, and outputModule. These names can be anything the user decides to define, as long as they are .
-\begin{figure}[!ht]
-  \caption{Video output from the TX1 using a PointGrey camera with an EVS-3000 lens attached}
-	  \centering
-		    \includegraphics[width=0.6\textwidth]{images/vlcsnap-2016-02-11-17h42m53s150.png}
-				\end{figure}
-\begin{figure}[!ht]
-  \caption{Video output from the TX1 using a PointGrey camera with a LS-TP-08 lens attached}
-	  \centering
-		    \includegraphics[width=0.6\textwidth]{images/vlcsnap-2016-02-11-17h42m30s486.png}
-				\end{figure}
 				
    \end{document}
 
