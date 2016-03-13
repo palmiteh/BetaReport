@@ -265,10 +265,11 @@ Our new CUDA-based system is extremely fast, and enables us to work on more adva
 	
    \section{Interesting Piece of Code}
    The core of our program is the modular video processing pipeline. This polymorphic object-oriented system allows us to easily implement new video processing algorithms, support for different types of input devices, and new methods of outputting results. It is also responsible for measuring performance of each individual component.\\
+   \subsection{CUDA based modules}
 \par
-Each module is defined in its own class, which is a child class of HawkEye\_Module. Each module has two required parts, the constructor and the run() command, as well as an existing setup() command which can be overloaded as needed.\\
+In our base program, each module is defined in its own class, which is a child class of HawkEye\_Module. Each module has two required parts, the constructor and the run() command, as well as an existing setup() command which can be overloaded as needed. The HawkEye\_CUDA\_Module retains these functions, but provides a default run() method which calls an appropriate runKernel() CUDA function based on the number of inputs and outputs. This is the default functionality for cuda modules, but the run() function can be overloaded to provide different functionality if desired. \\
    \begin{lstlisting}
-   	class MyModule: public HawkEye_Module{
+   	class MyModule: public HawkEye_CUDA_Module{
 	public:
 		MyModule(){
 			numinputs = 2;
@@ -286,15 +287,14 @@ Each module is defined in its own class, which is a child class of HawkEye\_Modu
 		output[index]=inputa[index]/2 + inputb[index]/2;
 	}
 	
-	void run(){
-		int threads=256;
-		int blocks = 1920*1080/threads;
-		runKernel<<<blocks,threads>>>(outputs[0],inputs[0],inputs[1]);
-	}
    \end{lstlisting}
  \par
-   This is an example of what a simple module might do. The HawkEye\_Module class defines two arrays of pointers to OpenCV Mat objects, which are a kind of smart matrix/image object. This code would take two images and combine them together by a simple averaging method. OpenCV allows mass mathematical operations to be performed on all elements of a matrix, and allows adding two identically sized matrices together via simple operations as shown above. Other algorithms may require more complex operations, but this shows how simple an implementation can really be.\\
-\par
+   This code describes a GPU accelerated module that would take two images and combine them together by a simple averaging method. The HawkEye\_CUDA\_Module class automatically allocates output buffers in shared CPU/GPU memory based on the number of inputs and outputs defined in the class constructor. This particular code sample is what is known as a CUDA kernel, which means that it is compiled by the NVIDIA compiler and executed on the GPU. The \_\_global\_\_ specifier tells the compiler that it is a CUDA section. The runKernel function is an overloaded virtual function that the HawkEye\_CUDA\_Module class sets up and runs in a manner completely transparent to the algorithm implementer. The only thing the implementer needs to know about are the blockIdx,blockDim, and threadIdx variables, which are part of the CUDA system. These variables define the different GPU threads' operating locations in the buffer.   \\
+ \par
+	Our system does not limit users to our built in CUDA kernel execution model. The user can choose to implement a more complex algorithm that includes a mixture of CUDA and CPU based operations. Also, we maintain compatibility with our OpenCV module system by automatically creating a OpenCV Mat object around our shared memory buffers. This allows the user to take advantage of OpenCV's built in filters and matrix operations, although we do not actually use them in our modules due to performance issues. \\
+
+\subsection{JSON configuration}
+	\par
 Once such a module is defined, it can then be added to the parser. Currently this is a hardcoded list of module names which checks an input type name string against the predefined types and creates the associated module, however we have plans to implement a dynamically-loaded module system that allows adding new modules automatically via a dynamically linked library. After the module is added to the parser, instances can then be created in the JSON configuration file. In order to create an instance, an entry is added to the ''modules'' section of the config file.\\   
 \par
 A JSON configuration for our program consists of three sections: The ''modules'' section, which defines named instances of HawkEye\_Modules, the ''start'' section, which tells the program to start a camera or input, and the connections section, which defines where the output(s) from each module goes to (as a module could have multiple outputs, and some modules require multiple inputs).\\
