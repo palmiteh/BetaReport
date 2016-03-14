@@ -253,6 +253,17 @@ Our new CUDA-based system is extremely fast, and enables us to work on more adva
 	  \centering
 		    \includegraphics[width=0.6\textwidth]{images/vlcsnap-2016-02-11-17h42m30s486.png}
 				\end{figure}
+
+\begin{figure}[!ht]
+  \caption{Video output from the TX1 running at 30 fps}
+	  \centering
+		    \includegraphics[width=0.6\textwidth]{images/exampleOutputNormalBeta.jpg}
+				\end{figure}
+\begin{figure}[!ht]
+  \caption{Video output from the TX1 running a line detection filter}
+	  \centering
+		    \includegraphics[width=0.6\textwidth]{images/exampleOutputLineDetectBeta.jpg}
+				\end{figure}
   
   \subsection{Implications of Beta Results}
   Now that our frame rate far exceeds our requirement, we can now focus on debugging, increasing stability, and implementing our stretch goals. Our current software works perfectly when it is running, but sometimes it will crash during exit because the GPU cleanup may occur before some of the threads operating on GPU memory have actually stop. Once we fix these issues, we will then focus on additional improvements. We intend to create a CUDA color space conversion to replace the existing one, which should enable us to maximize our frame rate for all cameras. Then we will focus on our stretch goal of implementing a runway detection filter.
