@@ -29,16 +29,16 @@ $(TRG): %.dvi: %.tex $(EXAMPLES)
 	$(LATEX) $<
 
 $(PSF):%.ps: %.dvi
-	$(DVIPS) -R -Poutline -t letter $< -o $@
+	#$(DVIPS) -R -Poutline -t letter $< -o $@
 
 $(PDF): %.pdf: %.ps
-	ps2pdf $<
+	#ps2pdf $<
 
 show: $(TRG)
 	@for i in $(TRG) ; do $(XDVI) $$i & done
 
 showps: $(PSF)
-	@for i in $(PSF) ; do $(GH) $$i & done
+	#@for i in $(PSF) ; do $(GH) $$i & done
 
 writeup:
 	pdflatex progress_report
