@@ -1,0 +1,24 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}
+\BOOKMARK [1][-]{section.2}{Hardware}{}
+\BOOKMARK [1][-]{section.3}{Current Progress}{}
+\BOOKMARK [2][-]{subsection.3.1}{Refined Requirements Document}{section.3}
+\BOOKMARK [2][-]{subsection.3.2}{Jetson TK1}{section.3}
+\BOOKMARK [2][-]{subsection.3.3}{Jetson TX1}{section.3}
+\BOOKMARK [3][-]{subsubsection.3.3.1}{OpenCV Video Output}{subsection.3.3}
+\BOOKMARK [3][-]{subsubsection.3.3.2}{OpenGL Video Output}{subsection.3.3}
+\BOOKMARK [3][-]{subsubsection.3.3.3}{CUDA Library Functionality}{subsection.3.3}
+\BOOKMARK [3][-]{subsubsection.3.3.4}{Modular Software System}{subsection.3.3}
+\BOOKMARK [3][-]{subsubsection.3.3.5}{Development of the Modules}{subsection.3.3}
+\BOOKMARK [1][-]{section.4}{Problems That Impeded Progress}{}
+\BOOKMARK [2][-]{subsection.4.1}{Jetson TK1 Kernel Recompile}{section.4}
+\BOOKMARK [2][-]{subsection.4.2}{Jetson TX1 Manufacturer Error}{section.4}
+\BOOKMARK [2][-]{subsection.4.3}{Jetson TX1 and PointGrey Camera Compatibility}{section.4}
+\BOOKMARK [2][-]{subsection.4.4}{OpenCV Limiting Frame Rate}{section.4}
+\BOOKMARK [1][-]{section.5}{Beta Release Results}{}
+\BOOKMARK [2][-]{subsection.5.1}{Implications of Beta Results}{section.5}
+\BOOKMARK [1][-]{section.6}{What is left to do}{}
+\BOOKMARK [2][-]{subsection.6.1}{System and Code Bugs}{section.6}
+\BOOKMARK [2][-]{subsection.6.2}{Stretch Goals}{section.6}
+\BOOKMARK [1][-]{section.7}{Interesting Piece of Code}{}
+\BOOKMARK [2][-]{subsection.7.1}{CUDA based modules}{section.7}
+\BOOKMARK [2][-]{subsection.7.2}{JSON configuration}{section.7}
