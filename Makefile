@@ -1,8 +1,17 @@
+# DVIPDF  = dvipdft
+
+# PDF	= $(SRC:%.tex=%.pdf)
+
+# pdf: $(PDF)
+
+# $(PDF): %.pdf: %.ps
+# 	ps2pdf $<
+
 LATEX	= pdflatex -shell-escape
 DVIPS	= dvips
-DVIPDF  = dvipdfm
+DVIPDF  = dvipdft
 XDVI	= xdvi -gamma 4
-GH	= gv
+GH		= gv
 
 EXAMPLES = $(wildcard *.h)
 SRC	:= $(shell egrep -l '^[^%]*\\begin\{document\}' *.tex)
@@ -23,7 +32,6 @@ $(PSF):%.ps: %.dvi
 	$(DVIPS) -R -Poutline -t letter $< -o $@
 
 $(PDF): %.pdf: %.ps
-	#	$(DVIPDF) -o $@ $<
 	ps2pdf $<
 
 show: $(TRG)
@@ -32,9 +40,24 @@ show: $(TRG)
 showps: $(PSF)
 	@for i in $(PSF) ; do $(GH) $$i & done
 
+writeup:
+	pdflatex progress_report
+	pdflatex progress_report
+	pdflatex progress_report
+
+text.pdf: progress_report
+	ps2pdf progress_report
+
+PDF: progress_report.pdf
+	pdf progress_report.pdf
+
 all: pdf
 
 clean:
-	rm -f *.pdf *.toc *.ps *.dvi *.out *.log *.aux *.bbl *.blg *.pyg
+	rm -f *.pdf *.ps *.dvi *.out *.log *.aux *.bbl *.blg *.pyg *.toc
 
 .PHONY: all show clean ps pdf showps
+
+move:
+	chmod a+r BetaReport.pdf
+	cp BetaReport.pdf ~/public_html/
