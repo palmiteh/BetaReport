@@ -1,0 +1,24 @@
+\contentsline {section}{\numberline {I}Introduction}{2}{section.1}
+\contentsline {section}{\numberline {II}Hardware}{2}{section.2}
+\contentsline {section}{\numberline {III}Current Progress}{3}{section.3}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-A}}Refined Requirements Document}{3}{subsection.3.1}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-B}}Jetson TK1}{4}{subsection.3.2}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-C}}Jetson TX1}{5}{subsection.3.3}
+\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {III-C}1}OpenCV Video Output}{5}{subsubsection.3.3.1}
+\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {III-C}2}OpenGL Video Output}{5}{subsubsection.3.3.2}
+\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {III-C}3}CUDA Library Functionality}{6}{subsubsection.3.3.3}
+\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {III-C}4}Modular Software System}{6}{subsubsection.3.3.4}
+\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {III-C}5}Development of the Modules}{7}{subsubsection.3.3.5}
+\contentsline {section}{\numberline {IV}Problems That Impeded Progress}{7}{section.4}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-A}}Jetson TK1 Kernel Recompile}{7}{subsection.4.1}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-B}}Jetson TX1 Manufacturer Error}{7}{subsection.4.2}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-C}}Jetson TX1 and PointGrey Camera Compatibility}{8}{subsection.4.3}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-D}}OpenCV Limiting Frame Rate}{8}{subsection.4.4}
+\contentsline {section}{\numberline {V}Beta Release Results}{8}{section.5}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {V-A}}Implications of Beta Results}{11}{subsection.5.1}
+\contentsline {section}{\numberline {VI}What is left to do}{11}{section.6}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {VI-A}}System and Code Bugs}{11}{subsection.6.1}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {VI-B}}Stretch Goals}{11}{subsection.6.2}
+\contentsline {section}{\numberline {VII}Interesting Piece of Code}{11}{section.7}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {VII-A}}CUDA based modules}{11}{subsection.7.1}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {VII-B}}JSON configuration}{12}{subsection.7.2}
