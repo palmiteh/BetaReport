@@ -49,8 +49,8 @@
    \newcommand{\itab}[1]{\hspace{4em}\rlap{#1}}
 
 
-   \title{Midterm Progress Report}
-   \author{Hailey Palmiter Scott Griffy Ryan Kitchen}
+   \title{Winter Term Progress Report}
+   \author{Hailey Palmiter, Scott Griffy, and Ryan Kitchen}
    \date{\today}
 
    %% The following metadata will show up in the PDF properties
@@ -58,7 +58,7 @@
       colorlinks = true,
       urlcolor = black,
       pdfauthor = {Palmiter, Griffy, Kitchen},
-      pdftitle = {Midterm Progress Report},
+      pdftitle = {Winter Term Progress Report},
       pdfsubject = {CS462},
       pdfpagemode = UseNone
    }
@@ -67,18 +67,18 @@
       \centering
       \vfill
       {\bfseries\Large
-         Midterm Progress Report \\
+         Winter Term Progress Report \\
          CS 462 - Senior Capstone\\
          \vskip2cm
-         February 9th, 2016\\
+         March 16th, 2016\\
          \vskip2cm
          The HawkEyed Crew - Group 4\\ 
          \vskip1cm
          Hailey Palmiter\\
          \vskip1cm
-         Ryan Kitchen\\
-         \vskip1cm
          Scott Griffy\\
+         \vskip1cm
+         Ryan Kitchen\\
     
       }
       \vfill
@@ -218,13 +218,12 @@ Development of this system is an iterative process. We first explored the modula
    After getting video output using the Jetson TX1's on-board camera, our next step was to interact with the USB 3.0 PointGrey camera. Once we got the PointGrey camera and the TX1 to interface with each other, we ran into the issue of getting the TX1 to register the camera and to display an image from it. We were finally able to get a video output from the PointGrey camera after realizing we were missing two big elements. To fix the issue, we first needed to recompile the Linux kernel to increase the USB buffer size to accommodate for the higher resolution image capturing from the PointGrey camera, as the on-board camera had a much lower resolution. Secondly, we had to acquire the proper camera software needed from PointGrey directly to interface between the proprietary camera API and OpenCV. After all was said and done, we had generated an output video stream from the USB 3.0 camera. 
    
    \subsection{OpenCV Limiting Frame Rate}
-   After further development in OpenCV we found that our visual frame rate was not matching the frame rate that was being logged. The logs were saying we were outputting 30 fps, but the video output was obviously less than that showing significant lag. We determined that this lag was due to a bottleneck when frames were being copied from the CPU to the GPU. Fixing this in OpenCV would've taken some serious investigation into OpenCV's code that we didn't have the time for. So, we left the capture and processing system in place, and simply replaced the way we were display the images. We have changed development to two different libraries that are able to replace OpenCV. One is called GLUT and uses OpenGL to create a window and display images on the screen. The other is a low level API that allows us to directly manipulate the frames on the GPU. This API is called CUDA, which is NVIDIA's general purpose GPU API. This allowed us to use a feature called Zero Copy, which allows us to write directly into GPU memory from the host application. Zero copy allows us to write the camera images directly to a buffer that is read by the GPU because the GPU and the CPU share memory. We now have eliminated the need for slow copy procedures, resulting in multiple camera inputs stitched together into one output stream with very high frame rate capabilities that are consistent. Performing image format conversions in-place on the GPU will improve performance further. 
+   After further development in OpenCV we found that our visual frame rate was not matching the frame rate that was being logged. The logs were saying we were outputting 30 fps, but the video output was obviously less than that showing significant lag. We determined that this lag was due to a bottleneck when frames were being copied from the CPU to the GPU. Fixing this in OpenCV would've taken some serious investigation into OpenCV's code that we did not have the time for. Therefore, we left the capture and processing system in place, and simply replaced the way we were display the images. We have changed development to two different libraries that are able to replace OpenCV. One is called GLUT and uses OpenGL to create a window and display images on the screen. The other is a low level API that allows us to directly manipulate the frames on the GPU. This API is called CUDA, which is NVIDIA's general purpose GPU API. This allowed us to use a feature called Zero Copy, which allows us to write directly into GPU memory from the host application. Zero copy allows us to write the camera images directly to a buffer that is read by the GPU because the GPU and the CPU share memory. We now have eliminated the need for slow copy procedures, resulting in multiple camera inputs stitched together into one output stream with very high frame rate capabilities that are consistent. Performing image format conversions in-place on the GPU will improve performance further. 
    
-    
 \section{Beta Release Results}
-   Our project requirement specification describes specific latency, frame rate, and resolution requirements in order for our system to be a viable option to replace the current FPGA system. Our end-to-end latency requirement specifies that it should take less than 100ms to capture video from the camera, process it, and display the output stream. Additionally, we are required to process a minimum of 30 frames per second at 1080p resolution. Our goal is to perform as much image processing as we can while maintaining these performance metrics.\\
+   Our project defines specific latency, frame rate, and resolution requirements in order for our system to be a viable option to replace the current FPGA system. Our end-to-end latency requirement specifies that it should take less than 100ms to capture video from the camera, process it, and display the output stream. Additionally, we are required to process a minimum of 30 frames per second at 1080p resolution. Our goal is to perform as much image processing as we can while maintaining these performance metrics.\\
 \par
-In order to measure the latency of our application, our software contains a detailed, built-in performance logging system. Each component of the software is separated into polymorphic, class-based HawkEye modules. Each individual module measures execution time including the time it takes to transfer the results to the next module. The overall latency for each frame is determined by the time it takes for all modules to finish executing from input to output, counted as the sum of the longest path. It is important to measure each individual module's latency as well as the overall latency because not all cameras are going to be subjected to the same filtering algorithms. The additional information will enable us to predict the outcome latency based on the set of modules used. In order to measure the frame rate, we simply count the number of frames processed in a second.\\
+In order to measure the latency of our application, our software contains a detailed, built-in performance logging system. Each component of the software is separated into polymorphic, class-based, HawkEye modules. Each individual module measures execution time including the time it takes to transfer the results to the next module. The overall latency for each frame is determined by the time it takes for all modules to finish executing from input to output, counted as the sum of the longest path. It is important to measure each individual module's latency as well as the overall latency because not all cameras are going to be subjected to the same filtering algorithms. The additional information will enable us to predict the outcome latency based on the set of modules used. In order to measure the frame rate, we simply count the number of frames processed in a second.\\
 \par
 Our goal is to support independent image processing of three separate inputs. Rockwell Collins has given us some challenges outside of our requirements, which we will try to implement. We have multiple types of cameras with different lenses: two standard RGB cameras and one NIR (Near infrared) camera. The IR camera will be used to identify high intensity point lights, which we will then overlay onto the processed input from one of the RGB cameras. In the industry, this would be used to identify runway lights for landing aircraft. The third camera would provide a more focused look at the target. The first performance benchmark we need to determine is to simply get three simultaneous camera feeds running at the full 30 frame per second.\\
 
@@ -262,34 +261,17 @@ After having poor initial results using OpenCV, we decided to completely impleme
 \par
 Using CUDA for our image processing system allowed us to meet high performance metrics, as we were able to add new filters with virtually no effect on frame rate or latency. Even a seemingly intensive edge detection algorithm causes a reduction of less than 1 frame per second. However, we were still limited on our frame rate by the input module.The 35-40fps we are now acquiring is acceptable for our requirements, but our cameras are capable of much greater frame rates: up to 166fps at 1080p. By inserting timing measurements into each step in the input module, we were able to determine that the main cause of slowdown is the PointGrey colorspace conversion, which can take up to 30ms to complete depending on the camera. This initially limited us to lower frame rates, but by threading the input module we were able to perform multiple conversions at the same time. This enabled us to achieve much higher frame rates, up to 110fps with a single camera. Our latency increased slightly to about 40ms, but this is still within our 100ms acceptable range.\\
 \par
-Our new CUDA-based system is extremely fast, and enables us to work on more advanced image processing algorithms. Our current software includes multiple combination filters which blend two images together by averaging their color values, as well as a Sobel edge detection filter that was provided by NVIDIA in their CUDA sample code. Even with three camera inputs, two combination filters, and an edge detection filter, we still achieve roughly 35 frames per second without even coming close to our latency requirement.\\
-
-\begin{figure}[!ht]
-  \caption{Video output from the TX1 using a PointGrey camera with an EVS-3000 lens attached}
-	  \centering
-		    \includegraphics[width=0.6\textwidth]{images/vlcsnap-2016-02-11-17h42m53s150.png}
-				\end{figure}
-\begin{figure}[!ht]
-  \caption{Video output from the TX1 using a PointGrey camera with a LS-TP-08 lens attached}
-	  \centering
-		    \includegraphics[width=0.6\textwidth]{images/vlcsnap-2016-02-11-17h42m30s486.png}
-				\end{figure}
+Our new CUDA-based system is extremely fast, and enables us to work on more advanced image processing algorithms. Our current software includes multiple combination filters which blend two images together by averaging their color values, as well as a edge detection filter that was provided by NVIDIA in their CUDA sample code. Even with three camera inputs, two combination filters, and an edge detection filter, we still achieve roughly 35 frames per second without even coming close to our latency requirement.\\
 
 \begin{figure}[!ht]
   \caption{Video output from the TX1 running at 30 fps}
 	  \centering
 		    \includegraphics[width=0.6\textwidth]{images/exampleOutputNormalBeta.jpg}
 				\end{figure}
-\begin{figure}[!ht]
-  \caption{Video output from the TX1 running a line detection filter}
-	  \centering
-		    \includegraphics[width=0.6\textwidth]{images/exampleOutputLineDetectBeta.jpg}
-				\end{figure}
   
   \subsection{Implications of Beta Results}
   Now that our frame rate far exceeds our requirement, we can now focus on debugging, increasing stability, and implementing our stretch goals. Our current software works perfectly when it is running, but sometimes it will crash during exit because the GPU cleanup may occur before some of the threads operating on GPU memory have actually stop. Once we fix these issues, we will then focus on additional improvements. We intend to create a CUDA color space conversion to replace the existing one, which should enable us to maximize our frame rate for all cameras. Then we will focus on our stretch goal of implementing a runway detection filter.
-  
-  
+
 \section{What is left to do}
 	\subsection{System and Code Bugs}
 	We currently have a few code bugs in the system that are causing strange output or system failure.\\
@@ -313,7 +295,7 @@ Our new CUDA-based system is extremely fast, and enables us to work on more adva
    The core of our program is the modular video processing pipeline. This polymorphic object-oriented system allows us to easily implement new video processing algorithms, support for different types of input devices, and new methods of outputting results. It is also responsible for measuring performance of each individual component.\\
    
    \subsection{CUDA based modules}
-In our base program, each module is defined in its own class, which is a child class of HawkEye\_Module. Each module has two required parts, the constructor and the run() command, as well as an existing setup() command which can be overloaded as needed. The HawkEye\_CUDA\_Module retains these functions, but provides a default run() method which calls an appropriate runKernel() CUDA function based on the number of inputs and outputs. This is the default functionality for cuda modules, but the run() function can be overloaded to provide different functionality if desired. \\
+In our base program, each module is defined in its own class, which is a child class of HawkEye\_Module. Each module has two required parts, the constructor and the run() command, as well as an existing setup() command which can be overloaded as needed. The HawkEye\_CUDA\_Module retains these functions, but provides a default run() method which calls an appropriate runKernel() CUDA function based on the number of inputs and outputs. This is the default functionality for CUDA modules, but the run() function can be overloaded to provide different functionality if desired. \\
    \begin{lstlisting}
    	class MyModule: public HawkEye_CUDA_Module{
 	public:
