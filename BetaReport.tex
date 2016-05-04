@@ -84,7 +84,7 @@
       \vfill
       \vskip2cm
       \begin{abstract}
-      This document is a beta level release progress report that covers a brief introduction of our senior project, our current progress, problems that have impeded our progress, and the preliminary results that have been gathered. It also describes what is left to do to increase our projects performance and/or more concrete testing of our software system before it is presented at the Engineering Expo, along with the potential for implementing any of our stretch goals before then as well. This report includes a few interesting pieces of code and a description of what this code does to improve or enhance our system. It is constructed using the IEEEtran style guidelines.
+      This document is a release progress report that covers a brief introduction of our senior project, our current progress, problems that have impeded our progress, and the results that have been gathered. It also describes what is left to do to increase our projects performance and/or more concrete testing of our software system before it is presented at the Engineering Expo, along with the potential for implementing any of our stretch goals before then as well. This report includes a few interesting pieces of code and a description of what this code does to improve or enhance our system. It is constructed using the IEEEtran style guidelines.
       \end{abstract}
       \vfill
    \end{titlepage}
@@ -213,6 +213,12 @@ Development of this system is an iterative process. We first explored the modula
   We are using a 6x1 wood board that is eight feet long to create the runway on. Currently we have the runway itself painted with the threshold, touch down, fixed distance, and center line markings and the identification number.
    
 \section{Problems That Impeded Progress}
+  \subsection{System and Code Bugs}
+	We had a few code bugs in the system that caused strange output or system failure.\\
+	\begin{itemize}
+		\item System froze during program exit: Our system didn't uninitialize the hardware properly and ended up freezing up the hardware. This wasn't difficult to fix and simply required us to create an exit function.
+		\item Camera output is split: Another issue while quitting our application is improper reinitialization of the cameras. This can cause cameras to act strangely upon restart, such as partitioning their image output in half before sending it to the screen. We have dterminined this to be a problem with our hardware and is fixed by simply never rebooting the system during demo.
+	\end{itemize}
    
    \subsection{Jetson TX1 Kernel Recompile}
    We found that the Jetson TX1's operating system had to be recompiled in order to grab full 2048x2048 pixel images from the camera. Without the recompiled kernel we were able to grab images at a lower resolution using the FlyCapture API, but we needed to obtain the higher resolution to match our requirement of 1080 pixels at 30 frames per second. We had to recompile the TX1 kernel with a special version of Linux4Tegra, named "Grinch," to get the output from the USB 3.0 PointGrey camera. The original version of the kernel that was supplied with the TX1 had actually disabled support to the USB 3.0 port and was only allowing it to be used as a USB 2.0. The recompile of the kernel proved to be a difficult task, and we still had some connection and display issues with the video stream on the TX1. Despite these setbacks, we were able to get a much better video output on the TX1.
@@ -227,8 +233,11 @@ Development of this system is an iterative process. We first explored the modula
    After further development in OpenCV we found that our visual frame rate was not matching the frame rate that was being logged. The logs were saying we were outputting 30 fps, but the video output was obviously less than that showing significant lag. We determined that this lag was due to a bottleneck when frames were being copied from the CPU to the GPU. Fixing this in OpenCV would've taken some serious investigation into OpenCV's code that we did not have the time for. Therefore, we left the capture and processing system in place, and simply replaced the way we were display the images. We have changed development to two different libraries that are able to replace OpenCV. One is called GLUT and uses OpenGL to create a window and display images on the screen. The other is a low level API that allows us to directly manipulate the frames on the GPU. This API is called CUDA, which is NVIDIA's general purpose GPU API. This allowed us to use a feature called Zero Copy, which allows us to write directly into GPU memory from the host application. Zero copy allows us to write the camera images directly to a buffer that is read by the GPU because the GPU and the CPU share memory. We now have eliminated the need for slow copy procedures, resulting in multiple camera inputs stitched together into one output stream with very high frame rate capabilities that are consistent. Performing image format conversions in-place on the GPU will improve performance further. 
    \subsection{Lens Magnification}
    Once we begin working with our runway model demonstration, we were able to see that our two standard camera lenses were blurry for far away object but very good with near objects. Almost so good that you can see someones finger print when held to the camera. No matter the adjustments we made to the lens, we were not able to get a clear image. Our sponsor recommended using spacer to increase the focal length of the camera and lens system, but even once the spacers were applied it made the focal length even worse giving us a very blurry image. This problem has not been resolved yet and is still on going to create a sharper image. We have discussed using that lens on the NIR camera as the LED lights will be at a closer range to the cameras. 
+
+   \subsection{Proper Latency Testing}
+   We originally used a simple Linux time function inside a thread in our software in order to determine what the latency of our system was. After discussing this method with our clients we learned that measuring the framerate using software functions commonly causes problems. Our clients suggested that we should use a high speed camera to measure the latency. The high speed camera would record the monitor as well as a LED blinking on and off, allowing us to mesure how many frames it took after the LED was turned off for the displayed image to show that the LED was off. This method is a surefire way to get the correct latency because it's hard for software to ensure the correct measurements of hardware latency. For our high-speed camera, we borrowed a GoPro Hero4 from our professor and then counted the frames in a video editor.
    
-\section{Beta Release Results}
+\section{Release Results}
    Our project defines specific latency, frame rate, and resolution requirements in order for our system to be a viable option to replace the current FPGA system. Our end-to-end latency requirement specifies that it should take less than 100ms to capture video from the camera, process it, and display the output stream. Additionally, we are required to process a minimum of 30 frames per second at 1080p resolution. Our goal is to perform as much image processing as we can while maintaining these performance metrics.\\
 \par
 In order to measure the latency of our application, our software contains a detailed, built-in performance logging system. Each component of the software is separated into polymorphic, class-based, HawkEye modules. Each individual module measures execution time including the time it takes to transfer the results to the next module. The overall latency for each frame is determined by the time it takes for all modules to finish executing from input to output, counted as the sum of the longest path. It is important to measure each individual module's latency as well as the overall latency because not all cameras are going to be subjected to the same filtering algorithms. The additional information will enable us to predict the outcome latency based on the set of modules used. In order to measure the frame rate, we simply count the number of frames processed in a second.\\
@@ -281,17 +290,10 @@ Our new CUDA-based system is extremely fast, and enables us to work on more adva
   Now that our frame rate far exceeds our requirement, we can now focus on debugging, increasing stability, and implementing our stretch goals. Our current software works perfectly when it is running, but sometimes it will crash during exit because the GPU cleanup may occur before some of the threads operating on GPU memory have actually terminated. Once we fix these issues, we will then focus on additional improvements. We intend to create a CUDA color space conversion to replace the existing one, which should enable us to maximize our frame rate for all cameras. Then we will focus on our stretch goal of implementing a runway detection filter.
 
 \section{What is left to do}
-  \subsection{System and Code Bugs}
-	We currently have a few code bugs in the system that are causing strange output or system failure.\\
-	\begin{itemize}
-		\item System freezes during program exit: Our system doesn't uninitialize the hardware properly and ends up freezing up the hardware. This shouldn't be difficult to fix.
-		\item Camera output is split: Another issue while quitting our application is improper reinitialization of the cameras. This can cause cameras to act strangely upon restart, such as partitioning their image output in half before sending it to the screen.
-	\end{itemize}
 	
 	\subsection{Stretch Goals}
 	If time permits, we should have the ability to implement some other functionality that extends our requirements standard. We have developed a plan for some of these, and are considering them as stretch goals. A few of these features have already been implemented or are close to being meet:\\
 	\begin{itemize}
-		\item Improve the frame rate of our system (above ~60fps)
 		\item Display our video output stream on more than one monitor simultaneously  
 		\item Perform an object tracking filter
 		\item Design a real-world model to test our cameras on, such as with miniatures (two of our cameras have micro lenses which would be perfect for miniatures)
@@ -301,6 +303,12 @@ Our new CUDA-based system is extremely fast, and enables us to work on more adva
 	
   \subsection{Runway Demonstration}
   For our runway demonstration, we still need to add the approach lights using LED strip lights. These lights will be powered and operated by a Raspberry Pi. We must also create a stable stand to put the cameras on and give them the proper height to match our scale requirements of a 3 degree pitch from the runway. 
+
+  \subsection{Implementing Zoom Lens}
+  As part of our runway demo we will have a camera with a zoom lens fixed on the number painted on our runway. The zoom lens will provide a clearer image of the number on the runway for identification. In a real world scenario, the plane may be too far away for the pilot to see the number without a zoom camera, which creates a real world application of zoom lenses. The implementation of a zoom lens in our demo will show that single-board computers can handle practical applications like this.
+
+  \subsection{Fix Image Overlay}
+  In another part of our runway demonstration, we will use a zoom lens, an NIR camera, and an RGB camera to produce one output. Because the cameras are spaced far apart relative to the model runway, we will need to implement an overlay function inorder to combine the video produced by the three camera correctly.
 	
    \section{Interesting Piece of Code}
    The core of our program is the modular video processing pipeline. This polymorphic object-oriented system allows us to easily implement new video processing algorithms, support for different types of input devices, and new methods of outputting results. It is also responsible for measuring performance of each individual component.\\
