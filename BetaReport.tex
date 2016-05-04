@@ -49,7 +49,7 @@
    \newcommand{\itab}[1]{\hspace{4em}\rlap{#1}}
 
 
-   \title{Winter Term Progress Report}
+   \title{Spring Term Progress Report}
    \author{Hailey Palmiter, Scott Griffy, and Ryan Kitchen}
    \date{\today}
 
@@ -58,7 +58,7 @@
       colorlinks = true,
       urlcolor = black,
       pdfauthor = {Palmiter, Griffy, Kitchen},
-      pdftitle = {Winter Term Progress Report},
+      pdftitle = {Spring Term Progress Report},
       pdfsubject = {CS462},
       pdfpagemode = UseNone
    }
@@ -67,7 +67,7 @@
       \centering
       \vfill
       {\bfseries\Large
-         Winter Term Progress Report \\
+         Spring Term Progress Report \\
          CS 462 - Senior Capstone\\
          \vskip2cm
          March 16th, 2016\\
@@ -84,7 +84,7 @@
       \vfill
       \vskip2cm
       \begin{abstract}
-      This document is a release progress report that covers a brief introduction of our senior project, our current progress, problems that have impeded our progress, and the results that have been gathered. It also describes what is left to do to increase our projects performance and/or more concrete testing of our software system before it is presented at the Engineering Expo, along with the potential for implementing any of our stretch goals before then as well. This report includes a few interesting pieces of code and a description of what this code does to improve or enhance our system. It is constructed using the IEEEtran style guidelines.
+      This document is a release progress report that covers a brief introduction of our senior project, our current progress, problems that have impeded our progress, and the results that have been gathered. It also describes what is left to do to increase our projects performance and/or create more concrete testing of our software system before it is presented at the Engineering Expo. It also describes our stretch goals may complete before then as well and some detail about our planning of our demo for expo. This report includes a few interesting pieces of code and a description of what this code does to improve or enhance our system. It is constructed using the IEEEtran style guidelines.
       \end{abstract}
       \vfill
    \end{titlepage}
@@ -99,7 +99,7 @@
    Our goal is to provide a proof of concept for an alternative to Rockwell Collins' FPGAs. It must meet the performance metrics, provide faster implementation time, and reduce the cost of production. Specifically, we are designing a proof of concept using single board computers (SBCs). Single board computers differ from FPGAs because they have a standardized execution environment, which allows simplified code to be executed on it, reducing the development time. Single board computers also use low cost hardware and don't consume much power. If we can prove that the video quality produced by the SBCs is adequate for pilots to use, they will meet all the requirements needed to develop a practical vision system on. In the air, FPGAs often take feeds from multiple cameras and run a lot of processing algorithms on those images. In order to be effective, the SBCs should also be able to handle this operation. Our project aims to test and measure the capabilities of a single board computer by delivering a multiple-stream video display that has been processed to a high degree. We believe the best candidate for this is to use NVIDIA's single board computer, the Jetson TX1. Our goal is to fully test the Jetson TX1's ability to provide enhanced imaging. This proof of concept will result in measurements that will help Rockwell Collins determine the practicality of using single board computers for their vision systems.
    
 \section{Hardware}
-   This section includes a list of all the hardware we have been (very generously) leant and have been working with for the duration of this project. The following list and images should be able to supply a better understanding and familiarization of the project.\\
+   This section includes a list of all the hardware we have been (very generously) lent and have been working with for the duration of this project. The following list and images should be able to supply a better understanding and familiarization of the project.\\
 	\\Cameras (figure 1):  
     		\begin{itemize}
 		\item GS3-U3-41C6NIR-C (PointGrey/GrassHopper)
@@ -155,7 +155,7 @@
 				\end{figure}
 
 
-\section{Current Progress}
+\section{Progress timeline}
 
    \subsection{Refined Requirements Document}
    Before real development began, we had reread our requirements document and noticed that some changes and additions needed to be made. The revision was needed in order to refine our project with the discovery of problems/improvements we had found. It was a needed process as we wanted to have full clarity on what needed to be accomplished with this project, and be able to display those requirements with our sponsor. The changes were reviewed with our sponsor and agreed upon before any final changes were made. The most current requirements document was uploaded to the SharePoint as Revised\_ReqDoc on January 15th, 2016.\\ 
