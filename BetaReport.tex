@@ -201,6 +201,25 @@ It would be possible to continue development on the TK1, but it does not seem to
    \subsubsection{Development of the Modules}
 Development of this system is an iterative process. We first explored the modular system by outputting a static image to demonstrate that the system was working. We then created a module to handle input from the PointGrey camera by implementing its given software. This allowed us to be able to interact with multiple PointGrey cameras. When we received the USB 3.0 PCIe card, we were able to implement up to three cameras at once over USB 3.0, all overlaying their video streams on top of each other to provide one output stream. Currently we have it set up so that one camera is providing 50\% of the display output and the other two are split by 25\% each. When only two cameras are running, the video output is provided with a split 50\% input from the cameras equally. The results of this output video stream is shown in figure 9 below. We have also added a line detection filter, which can run without dropping our frame rate any significant amount. The ability and ease of being able to switch between how many cameras are running and applying filters to each has proven the efficiency of our modular system. 
 
+    \subsubsection{Transition to Pipeline System}
+        \par With the CUDA and OpenGL based system we used in the beta release, we were able to achieve extremely high frame rates (>100fps) with very low internal latency. After the Beta release, we obtained tools to more accurately measure the end to end latency of the system, and our latency was very close to the 100ms maximum allowed. Also, our code base was cluttered and not as simple to use as we had originally desired, so we needed to reorganize it into a new structure. Our new pipeline system is an object oriented approach that drastically reduces code clutter, while creating some substantial performance benefits.
+        \par In order to decrease latency, we switched from a FIFO (first in first out) programming model to a LIFO (last in first out)  model. We combined all of the image processing together into a unified “pipeline”, which is a self contained object that grabs input from the camera buffer, performs all image processing, and outputs to a buffer that the display routine reads from. This C++ class completely separates the details of parallel execution from the algorithm design. With this new design, the algorithm implementer creates a pipeline function which receives input  and outputs a single frame. The Pipeline class spawns some number of threads that each grab the latest input, execute the image processing pipeline, and then stores the result in a shared buffer. The display thread then asks the Pipeline object for a new frame, and the result is the most recently processed frame. This works well because the display output is slower than the input and graphics processing, and processing and displaying every single frame would result in a bottleneck on the output. By only displaying the most current frame, we avoid this situation entirely and simply discard all extra frames on both the camera side and the image processing side. We are continuing to fine tune this process to eliminate any wasted video processing and reduce GPU load.
+        \par This pipelined system eliminates the need for the modular system because the user can simply create their new image processing algorithm within a single, overloaded virtual class member function, and the Pipeline class will take care of everything else including the GUI, camera input, multithreading, and CUDA stream separation. Our image processing functions can be seen as an independent library that provides video processing functions that operate on any GPU buffers. With these two libraries, one can easily implement any new camera application and have high performance without sacrificing ease of programming. In addition, one can utilize openCV’s GPU algorithms or any other video processing algorithm that operates on GPU memory.
+    \subsubsection{Development of new image processing algorithms}
+        \subsubsubsection{CUDA based colorspace conversion}
+        We implemented a new GPU based algorithm which converts the raw Bayer format images from the camera into RGB and Mono images for our use. This one improvement was responsible for pushing our framerate from less than 30 frames per second to over 125 frames per second for our color camera, and enables us to implement algorithms which use color as well as grayscale without taking a performance hit.
+        \subsubsubsection{Gradient-based edge detection filter}
+        We also implemented a new filter which is used to detect and emphasize runway features to enhance the output of our system. This edge detection filter outlines runway markings and labels that the pilot may have difficulty seeing with the naked eye due to low contrast and bright lighting. It could also potentially be useful for autonomous vehicles that would need to detect runways and runway obstructions, which would be easily seen by a human pilot but not necessarily by an autonomous one.
+        \subsubsubsection{Threshold based overlay filter}
+        In order to make use of the edge detection and also to provide a means to overlay additional information, such as point light locations found with our IR camera, we implemented an overlay filter which highlights all pixels in an image based on all points above a certain value in another input (such as the detected edges). This provides a more useful means of display than simply the raw output of the processing algorithms. For example, highlighting runway markings on a camera feed while still showing the original image.
+        \subsubsubsection{Parallax effect correction}
+        Because we are using multiple cameras to provide a single viewpoint, and because our demo for Expo is very small, there is a noticeable offset between the different cameras. Because our runway demonstration is a flat surface and has fixed cameras, we devised a means of virtually aligning two different cameras so that their output images appear to be from the same viewpoint. This is because our cameras are spaced more than two inches apart, whilst the runway is only four inches wide. In a real world scenario this would be unnecessary as the runway is over 150 feet wide and the cameras would still only be two inches apart, but for our demonstration to work properly we needed to correct for this significant variation. 
+
+
+
+
+
+
 \begin{figure}[!ht]
   \caption{Video output from the TX1 overlaying three USB 3.0 video streams}
 	  \centering
@@ -327,54 +346,47 @@ Our new CUDA-based system is extremely fast, and enables us to work on more adva
    \section{Interesting Piece of Code}
    The core of our program is the modular video processing pipeline. This polymorphic object-oriented system allows us to easily implement new video processing algorithms, support for different types of input devices, and new methods of outputting results. It is also responsible for measuring performance of each individual component.\\
    
-   \subsection{CUDA based modules}
-In our base program, each module is defined in its own class, which is a child class of HawkEye\_Module. Each module has two required parts, the constructor and the run() command, as well as an existing setup() command which can be overloaded as needed. The HawkEye\_CUDA\_Module retains these functions, but provides a default run() method which calls an appropriate runKernel() CUDA function based on the number of inputs and outputs. This is the default functionality for CUDA modules, but the run() function can be overloaded to provide different functionality if desired. \\
+   \subsection{New Pipeline system}
+   The pipeline class is the core of our new system, and provides a point of entry for the user of our code. It replaces the module system entirely to reduce complexity of implementation and provide more flexibility of use. It manages all of the multithreading, frame capture, OpenGL output, and CUDA setup and teardown, while providing an extremely simple means of implementing new functionality. It allows the algorithm developer to simply create a function that operates on a GPU buffer, and not have to worry about the details of parallel programming optimizations. 
+   \par This code example shows how easy it is to create an application with our library. This application takes the input from two cameras, one RGB and one NIR. It then overlays edge detection from the RGB camera and point lights detected by the NIR camera onto the RGB camera's feed. This would be a complete application using our pipeline and image processing algorithm libraries. It also demonstrates how a user would integrate their own algorithm into a Hawkeye based application.
    \begin{lstlisting}
-   	class MyModule: public HawkEye_CUDA_Module{
-	public:
-		MyModule(){
-			numinputs = 2;
-			numoutputs=1;
-			setup();
-		}  
-   \end{lstlisting}
- \par
-   The initializer MUST set the number of inputs and outputs. This is extremely important because the setup() function creates the appropriate buffers and sets some internal variables needed by the module class to determine when the needed inputs have been satisfied (and thus when to execute).\\
-   \begin{lstlisting}
-	   
-	// CUDA kernel executed on the GPU
-   	__global__ void runKernel(Pixel *output, Pixel *inputa, Pixel *inputb){
-	    index = blockIdx.x*blockDim.x + threadIdx.x;
-		output[index]=inputa[index]/2 + inputb[index]/2;
-	}
-	
-   \end{lstlisting}
- \par
-   This code describes a GPU accelerated module that would take two images and combine them together by a simple averaging method. The HawkEye\_CUDA\_Module class automatically allocates output buffers in shared CPU/GPU memory based on the number of inputs and outputs defined in the class constructor. This particular code sample is what is known as a CUDA kernel, which means that it is compiled by the NVIDIA compiler and executed on the GPU. The \_\_global\_\_ specifier tells the compiler that it is a CUDA section. The runKernel function is an overloaded virtual function that the HawkEye\_CUDA\_Module class sets up and runs in a manner completely transparent to the algorithm implementer. The only thing the implementer needs to know about are the blockIdx,blockDim, and threadIdx variables, which are part of the CUDA system. These variables define the different GPU threads' operating locations in the buffer.\\
- \par
-	Our system does not limit users to our built in CUDA kernel execution model. The user can choose to implement a more complex algorithm that includes a mixture of CUDA and CPU based operations. Also, we maintain compatibility with our OpenCV module system by automatically creating a OpenCV Mat object around our shared memory buffers. This allows the user to take advantage of OpenCV's built in filters and matrix operations, although we do not actually use them in our modules due to performance issues. \\
-
-   \subsection{JSON configuration}
-Once such a module is defined, it can then be added to the parser. Currently this is a hardcoded list of module names which checks an input type name string against the predefined types and creates the associated module, however we have plans to implement a dynamically-loaded module system that allows adding new modules automatically via a dynamically linked library. After the module is added to the parser, instances can then be created in the JSON configuration file. In order to create an instance, an entry is added to the ''modules'' section of the config file.\\   
-\par
-A JSON configuration for our program consists of three sections: The ''modules'' section, which defines named instances of HawkEye\_Modules, the ''start'' section, which tells the program to start a camera or input, and the connections section, which defines where the output(s) from each module goes to (as a module could have multiple outputs, and some modules require multiple inputs).\\
-   \begin{lstlisting}
-   	{
-		''modules'':{
-			''MyModule_instance'':''MyModule'',
-			''inputModule'':''camera'',
-			''outputModule'':''basicOutput''
-		},
-		''start'':''inputModule'',
-		''inputModule'':{
-			''output0'':''MyModule_instance0''
-		},
-		''MyModule_instance'':{
-			''output0'':''outputModule0''
+   #include <hawkeye_pipeline.h>
+   #include <hawkeye_algorithms.h>
+   
+   void my_algorithm(Pixel *data){
+        // user implemented algorithm
+    }
+   
+   
+   class MyApplication:public HawkEye_Pipeline{
+	Public:
+		Camera cameras[2];
+		MyApplication(){
+			cameras[0] = new Camera();
+			cameras[1] = new MonoCamera();
+			num_threads = 6;                 //define the starting number of threads
+			setup();                         //set up the pipeline
+                }
+		
+		void pipeline(unsigned char *output){
+			Pixel *inputA = cameras[0].getFrame();   // Pixel is an unsigned char type
+			Pixel *inputB = cameras[1].getFrame();
+			copyImage(output,inputA);                // algorithms we have implemented
+			edgeDetectOverlay(output,inputA);        
+			lightDetectOverlay(output,inputB);
+                        my_algorithm(output);
 		}
-	}
+    };
+
+    int main(){
+	MyApplication app;
+	app.addThread();       // add one more thread
+	app.removeThread();    // just kidding, let's decrease the thread count
+    }
+
+   
    \end{lstlisting}
- \par 
-   In this example, we define two camera inputs, a combination algorithm module (as defined above in the previous code example), and an output window module. The start section tells the program that it needs to run both camera inputs, which it does separately. The code immediately after the start section tells the program to connect output 0 of inputModule1 to input 0 of MyModule\_instance, output 0 of inputModule2 to input 1 of MyModule\_instance, and the output of MyModule\_instance to the display module. When the program is executed, it will capture input from both cameras, combine it using MyModule, and then display it to a window. This configuration system makes it easy to implement complex networks of algorithm modules, and makes it so that any reconfiguration of the modules does not require a recompile of the software. This also defines the names used by the logger, in this case inputModule1, inputModule2, MyModule\_instance, and outputModule. These names can be anything the user decides to define, as long as they are different.
-				
+   \par As you can see, creating an application with our library is extremely easy to do. The setup for the processing algorithms is very straightforward and linear, while when executed, six frames would be simultaneously and asynchronously processing at the same time. Our software handles all of the synchronization and scheduling details, as well as providing high speed camera input and openGL-accelerated output. 
+   
+   
    \end{document}
