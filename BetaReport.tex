@@ -110,20 +110,26 @@
 		\begin{itemize}
 		\item EVS-3000 (figure 6)
 		\item 2 x LS-TP-08 (Standard) (figure 7)\\
+		\end{itemize}					
+	Single Board Computers: 
+		\begin{itemize}
+		\item Jetson TK1 (figure 2) 
+		\item Jetson TX1 developer kit with on-board camera (figure 3 and 4)\\
+		\end{itemize}		
+	Extras: 
+		\begin{itemize}
+		\item NIR Pass filter - blocks visible light while allowing NIR light through
+		\item 2-port USB 3.0 supersede PCIe Card (figure 5)
+		\item Camera mount
+		\item 3 x USB 3.0 cables
+		\item 1080p monitor (TV)\\
 		\end{itemize}
 		
 \begin{figure}[!ht]
   \caption{The 3 cameras provided by Rockwell Collins on a mount}
 	  \centering
 		    \includegraphics[width=0.6\textwidth,natwidth=610,natheight=642]{images/IMG_20160210_131527329.jpg}
-				\end{figure}
-				
-	Single Board Computers: 
-		\begin{itemize}
-		\item Jetson TK1 (figure 2) 
-		\item Jetson TX1 developer kit with on-board camera (figure 3 and 4)\\
-		\end{itemize}
- 
+				\end{figure} 
  \begin{figure}[!ht]
   \caption{The Jetson TK1}
 	  \centering
@@ -139,14 +145,6 @@
 	  \centering
 		    \includegraphics[width=0.6\textwidth,natwidth=610,natheight=642]{images/onboardCamera.JPG}
 				\end{figure}
-	Extras: 
-		\begin{itemize}
-		\item NIR Pass filter - blocks visible light while allowing NIR light through
-		\item 2-port USB 3.0 supersede PCIe Card (figure 5)
-		\item Camera mount
-		\item 3 x USB 3.0 cables
-		\item 1080p monitor (TV)\\
-		\end{itemize}
 
 \begin{figure}[!ht]
   \caption{2-port USB 3.0 supersede PCIe Card}
@@ -163,7 +161,7 @@
 Only a few minor things were changed, but they had a big impact on how we define our deliverable according to their standard. Our client was very happy to see the revisions we had made and all final revisions were agreed upon. Theses changes included that we have two working cameras for our final system, and to use either the Jetson TK1 or the Jetson TX1 for development. Before the revision, the requirements document was specifying the use of only the Jetson TK1. After much research on our end we had decided that either Jetson's TK1 or TX1 would be adequate for development, and actually plan to rely more heavily on the Jetson TX1. This change allows us to have more flexibility between the two Jetson SBC's, which provides protection if we cannot get one to work properly or to the meet the requirements needed. 
    
    \subsection{Jetson TK1}
-   We first began development on the Jetson TK1, as it was what we had on hand while we were waiting for the TX1 to arrive. We had installed graphics drivers on the TK1 as well as a driver for the original PointGrey camera we were loaned by Rockwell Collins. We had much difficulty working with the USB 3.0 port, due to the fact that the kernel support for it was disabled. We found that the Jetson TK1's operating system had to be recompiled in order to grab full 2048x2048 pixel images from the camera. Without the recompiled kernel we were able to grab images at a lower resolution using the FlyCapture API, and could only utilize the PointGrey camera as a USB 2.0 device, not USB 3.0. Even after the recompile of the kernel we still had connection issues and display latency with the video. We quickly began to realize that development on the TK1 may not even be worth the struggle, and have moved our development process to the TX1.\\ 
+   We first began development on the Jetson TK1, as it was what we had on hand while we were waiting for the TX1 to arrive. We had installed graphics drivers on the TK1 as well as a driver for the original PointGrey camera we were loaned by Rockwell Collins. We had much difficulty working with the USB 3.0 port, due to the fact that the kernel support for it was disabled. We found that the Jetson TK1's operating system had to be recompiled in order to grab full 2048x2048 pixel images from the camera. Without the recompiled kernel we were able to grab images at a lower resolution using the FlyCapture API, and could only utilize the PointGrey camera as a USB 2.0 device, not USB 3.0. Even after the recompile of the kernel we still had connection issues and display latency with the video. We quickly began to realize that development on the TK1 may not even be worth the struggle, and have moved our development process to the TX1.
 \par
 It would be possible to continue development on the TK1, but it does not seem to be the best option to obtain the greatest results moving forward with development. If time permits we will test our software system on the TK1 to measure its capabilities in comparison with the Jetson TX1.
    
@@ -199,26 +197,22 @@ It would be possible to continue development on the TK1, but it does not seem to
    In order to create modularity and flexibility, we implemented a modular software architecture for our vision system. Our software reads a JSON configuration file to set-up the modules. Each module is comprised of a series of camera captures, filters, and sinks (displays). This module system allows for configuration without the need to recompile every time, which can be complex and time consuming. It also gives us the ability to implement different filter modules and quickly apply only the desired filters at a given time. We have plans to expand the system so that it could intelligently use different types of cameras only for specific reasons to conserve power consumption. An example could be that a long-range camera may only be activated when needed to find the runway from a given distance. It could then be turned on and processed when needed, but deactivated to increase the performance when it is not needed. We also want to implement a multiple camera overlay. An example of this system is having one camera capture the normal image while an infrared camera is detecting bright spots (i.e. runway lights). Once the camera filter has detected the bright lights, it then draws circles around each spot to make a clear indication of where a runway is. This image is then overlaid onto the normal image to give the pilots the best possible accuracy and location of the runway. The impact of the flexibility of this modular system is limitless for being able to assist in safe flight in almost all situations.\\
    
    \subsubsection{Development of the Modules}
-Development of this system is an iterative process. We first explored the modular system by outputting a static image to demonstrate that the system was working. We then created a module to handle input from the PointGrey camera by implementing its given software. This allowed us to be able to interact with multiple PointGrey cameras. When we received the USB 3.0 PCIe card, we were able to implement up to three cameras at once over USB 3.0, all overlaying their video streams on top of each other to provide one output stream. Currently we have it set up so that one camera is providing 50\% of the display output and the other two are split by 25\% each. When only two cameras are running, the video output is provided with a split 50\% input from the cameras equally. The results of this output video stream is shown in figure 9 below. We have also added a line detection filter, which can run without dropping our frame rate any significant amount. The ability and ease of being able to switch between how many cameras are running and applying filters to each has proven the efficiency of our modular system. 
+Development of this system is an iterative process. We first explored the modular system by outputting a static image to demonstrate that the system was working. We then created a module to handle input from the PointGrey camera by implementing its given software. This allowed us to be able to interact with multiple PointGrey cameras. When we received the USB 3.0 PCIe card, we were able to implement up to three cameras at once over USB 3.0, all overlaying their video streams on top of each other to provide one output stream. Currently we have it set up so that one camera is providing 50\% of the display output and the other two are split by 25\% each. When only two cameras are running, the video output is provided with a split 50\% input from the cameras equally. The results of this output video stream is shown in figure 9 below. We have also added a line detection filter, which can run without dropping our frame rate any significant amount. The ability and ease of being able to switch between how many cameras are running and applying filters to each has proven the efficiency of our modular system. \\
 
     \subsubsection{Transition to Pipeline System}
-        \par With the CUDA and OpenGL based system we used in the beta release, we were able to achieve extremely high frame rates (>100fps) with very low internal latency. After the Beta release, we obtained tools to more accurately measure the end to end latency of the system, and our latency was very close to the 100ms maximum allowed. Also, our code base was cluttered and not as simple to use as we had originally desired, so we needed to reorganize it into a new structure. Our new pipeline system is an object oriented approach that drastically reduces code clutter, while creating some substantial performance benefits.
-        \par In order to decrease latency, we switched from a FIFO (first in first out) programming model to a LIFO (last in first out)  model. We combined all of the image processing together into a unified â€œpipelineâ€, which is a self contained object that grabs input from the camera buffer, performs all image processing, and outputs to a buffer that the display routine reads from. This C++ class completely separates the details of parallel execution from the algorithm design. With this new design, the algorithm implementer creates a pipeline function which receives input  and outputs a single frame. The Pipeline class spawns some number of threads that each grab the latest input, execute the image processing pipeline, and then stores the result in a shared buffer. The display thread then asks the Pipeline object for a new frame, and the result is the most recently processed frame. This works well because the display output is slower than the input and graphics processing, and processing and displaying every single frame would result in a bottleneck on the output. By only displaying the most current frame, we avoid this situation entirely and simply discard all extra frames on both the camera side and the image processing side. We are continuing to fine tune this process to eliminate any wasted video processing and reduce GPU load.
-        \par This pipelined system eliminates the need for the modular system because the user can simply create their new image processing algorithm within a single, overloaded virtual class member function, and the Pipeline class will take care of everything else including the GUI, camera input, multithreading, and CUDA stream separation. Our image processing functions can be seen as an independent library that provides video processing functions that operate on any GPU buffers. With these two libraries, one can easily implement any new camera application and have high performance without sacrificing ease of programming. In addition, one can utilize openCVâ€™s GPU algorithms or any other video processing algorithm that operates on GPU memory.
+	With the CUDA and OpenGL based system we used in the beta release, we were able to achieve extremely high frame rates (\>100fps). This code, though good for our frame rate requirement, was producing high latency that was very close to our threshold of 100ms. In order to decrease latency, we switched from a FIFO (first in first out) programming model to a LIFO (last in first out) model using pipelining. We combined all of the image processing together into a unified 'pipeline€', which is a self contained object that grabs input from the camera buffer, performs all image processing, and outputs to a buffer that the display routine reads from. This C++ class completely separates the details of parallel execution from the algorithm design. With this new design, the algorithm implementer creates a pipeline function which receives input  and outputs a single frame. The Pipeline class spawns some number of threads that each grab the latest input, execute the image processing pipeline, and then stores the result in a shared buffer. The display thread then asks the Pipeline object for a new frame, and the result is the most recently processed frame. This works well because the display output is slower than the input and graphics processing, and processing and displaying every single frame would result in a bottleneck on the output. By only displaying the most current frame, we avoid this situation entirely and simply discard all extra frames on both the camera side and the image processing side. We are continuing to fine tune this process to eliminate any wasted video processing and reduce GPU load.
+        \par This pipelined system eliminates the need for the modular system because the user can simply create their new image processing algorithm within a single, overloaded virtual class member function, and the Pipeline class will take care of everything else including the GUI, camera input, multithreading, and CUDA stream separation. Our image processing functions can be seen as an independent library that provides video processing functions that operate on any GPU buffers. With these two libraries, one can easily implement any new camera application and have high performance without sacrificing ease of programming. In addition, one can utilize openCV's GPU algorithms or any other video processing algorithm that operates on GPU memory.\\
+   
     \subsubsection{Development of new image processing algorithms}
-        \subsubsubsection{CUDA based colorspace conversion}
-        We implemented a new GPU based algorithm which converts the raw Bayer format images from the camera into RGB and Mono images for our use. This one improvement was responsible for pushing our framerate from less than 30 frames per second to over 125 frames per second for our color camera, and enables us to implement algorithms which use color as well as grayscale without taking a performance hit.
-        \subsubsubsection{Gradient-based edge detection filter}
-        We also implemented a new filter which is used to detect and emphasize runway features to enhance the output of our system. This edge detection filter outlines runway markings and labels that the pilot may have difficulty seeing with the naked eye due to low contrast and bright lighting. It could also potentially be useful for autonomous vehicles that would need to detect runways and runway obstructions, which would be easily seen by a human pilot but not necessarily by an autonomous one.
-        \subsubsubsection{Threshold based overlay filter}
+    \par
+        \paragraph{CUDA based colorspace conversion}
+        We implemented a new GPU based algorithm which converts the raw Bayer format images from the camera into RGB and Mono images for our use. This one improvement was responsible for pushing our frame rate from less than 30 frames per second to over 125 frames per second for our color camera, and enables us to implement algorithms which use color as well as grayscale without taking a performance hit.\\
+        \paragraph{Gradient-based edge detection filter}
+        We also implemented a new filter which is used to detect and emphasize runway features to enhance the output of our system. This edge detection filter outlines runway markings and labels that the pilot may have difficulty seeing with the naked eye due to low contrast and bright lighting. It could also potentially be useful for autonomous vehicles that would need to detect runways and runway obstructions, which would be easily seen by a human pilot but not necessarily by an autonomous one.\\
+        \paragraph{Threshold based overlay filter}
         In order to make use of the edge detection and also to provide a means to overlay additional information, such as point light locations found with our IR camera, we implemented an overlay filter which highlights all pixels in an image based on all points above a certain value in another input (such as the detected edges). This provides a more useful means of display than simply the raw output of the processing algorithms. For example, highlighting runway markings on a camera feed while still showing the original image.
-        \subsubsubsection{Parallax effect correction}
+        \paragraph{Parallax effect correction}\\
         Because we are using multiple cameras to provide a single viewpoint, and because our demo for Expo is very small, there is a noticeable offset between the different cameras. Because our runway demonstration is a flat surface and has fixed cameras, we devised a means of virtually aligning two different cameras so that their output images appear to be from the same viewpoint. This is because our cameras are spaced more than two inches apart, whilst the runway is only four inches wide. In a real world scenario this would be unnecessary as the runway is over 150 feet wide and the cameras would still only be two inches apart, but for our demonstration to work properly we needed to correct for this significant variation. 
-
-
-
-
-
 
 \begin{figure}[!ht]
   \caption{Video output from the TX1 overlaying three USB 3.0 video streams}
@@ -227,9 +221,10 @@ Development of this system is an iterative process. We first explored the modula
 				\end{figure}
 				
   \subsection{Engineering Expo Demonstration}
-  During a meeting with our Sponsors, the idea for our live demonstration at the engineering expo was created. They expressed that they wanted us to present a live feed that displays the use of overlaying multiple images and having to ability to switch to some other camera feature, such as a zoomed in image. The end idea that was agreed upon, was to create a miniature runway with approach LED lights. The runway would be to scale giving a realistic image of a three degree pitch from the location of the aircraft in air, to the front of the runway. This angle simulates the plane roughly be 200 feet off the ground and about 2400 feet from the front edge of the runway. The approach lights will be leading up to the runway, which we will be able to detect using our NIR camera. We ordered a NIR pass filter for the NIR camera that will allow the NIR light to pass, but blocks out any other light. We will then take this image and overlay it with our daylight normal image of the runway. We will also be able to switch to a camera with a zoom lens to magnify the runway number. This feature can also help assist the pilot in locating the correct landing strip. These different functionalities will be able to display the asymmetrical camera system, which is an important part of arial vision systems.\\
+  During a meeting with our Sponsors, the idea for our live demonstration at the engineering expo was created. They expressed that they wanted us to present a live feed that displays the use of overlaying multiple images and having to ability to switch to some other camera feature, such as a zoomed in image. The end idea that was agreed upon, was to create a miniature runway with approach LED lights. The runway would be to scale giving a realistic image of a three degree pitch from the location of the aircraft in air, to the front of the runway. This angle simulates the plane roughly be 200 feet off the ground and about 2400 feet from the front edge of the runway. The approach lights will be leading up to the runway, which we will be able to detect using our NIR camera. We ordered a NIR pass filter for the NIR camera that will allow the NIR light to pass, but blocks out any other light. We will then take this image and overlay it with our daylight normal image of the runway. We will also be able to switch to a camera with a zoom lens to magnify the runway number. This feature can also help assist the pilot in locating the correct landing strip. These different functionalities will be able to display the asymmetrical camera system, which is an important part of aerial vision systems.\\
   \par
   We are using a 6x1 wood board that is eight feet long to create the runway on. Currently we have the runway itself painted with the threshold, touch down, fixed distance, and center line markings and the identification number.
+   
    
 \section{Problems That Impeded Progress}
    
@@ -245,39 +240,50 @@ Development of this system is an iterative process. We first explored the modula
    \subsection{OpenCV Limiting Frame Rate}
    After further development in OpenCV we found that our visual frame rate was not matching the frame rate that was being logged. The logs were saying we were outputting 30 fps, but the video output was obviously less than that showing significant lag. We determined that this lag was due to a bottleneck when frames were being copied from the CPU to the GPU. Fixing this in OpenCV would've taken some serious investigation into OpenCV's code that we did not have the time for. Therefore, we left the capture and processing system in place, and simply replaced the way we were display the images. We have changed development to two different libraries that are able to replace OpenCV. One is called GLUT and uses OpenGL to create a window and display images on the screen. The other is a low level API that allows us to directly manipulate the frames on the GPU. This API is called CUDA, which is NVIDIA's general purpose GPU API. This allowed us to use a feature called Zero Copy, which allows us to write directly into GPU memory from the host application. Zero copy allows us to write the camera images directly to a buffer that is read by the GPU because the GPU and the CPU share memory. We now have eliminated the need for slow copy procedures, resulting in multiple camera inputs stitched together into one output stream with very high frame rate capabilities that are consistent. Performing image format conversions in-place on the GPU will improve performance further. 
    
-     \subsection{System and Code Bugs}
-	We had a few code bugs in the system that caused strange output or system failure.\\
+      \subsection{Proper Latency Testing}
+   We originally used a simple Linux time function inside a thread in our software in order to determine what the latency of our system was. After discussing this method with our clients we learned that measuring the frame rate using software functions commonly causes problems. Our clients suggested that we should use a high speed camera to measure the latency. The high speed camera would record the monitor as well as a LED blinking on and off, allowing us to measure how many frames it took after the LED was turned off for the displayed image to show that the LED was off. This method is a surefire way to get the correct latency because it's hard for software to ensure the correct measurements of hardware latency. For our high-speed camera, we borrowed a GoPro Hero4 from our professor and then counted the frames in a video editor.
+   
+   \subsection{High Latency with CUDA and OpenGL System}
+   With the CUDA and OpenGL based system we used in the beta release, we were able to achieve extremely high frame rates (\>100fps) with very low internal latency. After the Beta release, we obtained tools to more accurately measure the end to end latency of the system, and our latency was very close to the 100ms maximum allowed. Also, our code base was cluttered and not as simple to use as we had originally desired, so we needed to reorganize it into a new structure. Our new pipeline system is an object oriented approach that drastically reduces code clutter, while creating some substantial performance benefits.
+  
+      \subsection{Lens Magnification}
+   Once we begin working with our runway model demonstration, we were able to see that our two standard camera lenses were blurry for far away object but very good with near objects. Almost so good that you can see someones finger print when held to the camera. No matter the adjustments we made to the lens, we were not able to get a clear image. Our sponsor recommended using spacer to increase the focal length of the camera and lens system, but even once the spacers were applied it made the focal length even worse giving us a very blurry image. This problem has not been resolved yet and is still on going to create a sharper image. We have discussed using that lens on the NIR camera as the LED lights will be at a closer range to the cameras. 
+   
+   \subsection{System and Code Bugs}
+	We had a few code bugs in the system that caused strange output or system failure.
 	\begin{itemize}
 		\item System froze during program exit: Our system didn't uninitialize the hardware properly and ended up freezing up the hardware. This wasn't difficult to fix and simply required us to create an exit function.
-		\item Camera output is split: Another issue while quitting our application is improper reinitialization of the cameras. This can cause cameras to act strangely upon restart, such as partitioning their image output in half before sending it to the screen. We have determinined this to be a problem with our hardware and is fixed by simply never rebooting the system during demo.
+		\item Camera output is split: Another issue while quitting our application is improper reinitialization of the cameras. This can cause cameras to act strangely upon restart, such as partitioning their image output in half before sending it to the screen. We have determined this to be a problem with our hardware and is fixed by simply never rebooting the system during demo.
 	\end{itemize}
+	
    
-   \subsection{Lens Magnification}
-   Once we begin working with our runway model demonstration, we were able to see that our two standard camera lenses were blurry for far away object but very good with near objects. Almost so good that you can see someones finger print when held to the camera. No matter the adjustments we made to the lens, we were not able to get a clear image. Our sponsor recommended using spacer to increase the focal length of the camera and lens system, but even once the spacers were applied it made the focal length even worse giving us a very blurry image. This problem has not been resolved yet and is still on going to create a sharper image. We have discussed using that lens on the NIR camera as the LED lights will be at a closer range to the cameras. 
+\section{What is left to do}
+  \subsection{Runway Demonstration}
+  For our runway demonstration, we still need to add the approach lights using LED strip lights. These lights will be powered and operated by a controller that will connect into the Jetson TX1. We must also create a stable stand to put the cameras on and give them the proper height to match our scale requirements of a 3 degree pitch from the runway. 
 
-   \subsection{Proper Latency Testing}
-   We originally used a simple Linux time function inside a thread in our software in order to determine what the latency of our system was. After discussing this method with our clients we learned that measuring the framerate using software functions commonly causes problems. Our clients suggested that we should use a high speed camera to measure the latency. The high speed camera would record the monitor as well as a LED blinking on and off, allowing us to measure how many frames it took after the LED was turned off for the displayed image to show that the LED was off. This method is a surefire way to get the correct latency because it's hard for software to ensure the correct measurements of hardware latency. For our high-speed camera, we borrowed a GoPro Hero4 from our professor and then counted the frames in a video editor.
-   
-   
+  \subsection{Implementing the Zoom Lens}
+  As part of our runway demo we will have a camera with a zoom lens fixed on the number painted on our runway. The zoom lens will provide a clearer image of the number on the runway for identification. In a real world scenario, the plane may be too far away for the pilot to see the number without a zoom camera, which creates a real world application of zoom lenses. The implementation of a zoom lens in our demo will show that single-board computers can handle practical applications like this.
+
+  \subsection{Fix Image Overlay}
+  In another part of our runway demonstration, we will use a zoom lens, an NIR camera, and an RGB camera to produce one output. Because the cameras are spaced far apart relative to the model runway, we will need to implement an overlay function in order to combine the video produced by the three camera correctly. Figure 9 is a good example of the image we'd produce without an image overlay algorithm.
+  
+     \subsection{Stretch Goals}
+	If time permits, we should have the ability to implement some other functionality that extends our requirements standard. We have developed a plan for some of these, and are considering them as stretch goals. A few of these features have already been implemented or are close to being meet:
+	\begin{itemize}
+		\item Display our video output stream on more than one monitor simultaneously  
+		\item Perform an object tracking filter
+		\item Design a real-world model to test our cameras on, such as with miniatures (two of our cameras have micro lenses which would be perfect for miniatures)
+		\item Display video operation metrics on the video stream
+		\item Compare the Jetson with different single board computers, which would include re-implementing our code on different platforms and comparing their processing speed and hardware capabilities
+	\end{itemize}
+
+  
 \section{Release Results}
    Our project defines specific latency, frame rate, and resolution requirements in order for our system to be a viable option to replace the current FPGA system. Our end-to-end latency requirement specifies that it should take less than 100ms to capture video from the camera, process it, and display the output stream. Additionally, we are required to process a minimum of 30 frames per second at 1080p resolution. Our goal is to perform as much image processing as we can while maintaining these performance metrics.\\
 \par
 In order to measure the latency of our application, our software contains a detailed, built-in performance logging system. Each component of the software is separated into polymorphic, class-based, HawkEye modules. Each individual module measures execution time including the time it takes to transfer the results to the next module. The overall latency for each frame is determined by the time it takes for all modules to finish executing from input to output, counted as the sum of the longest path. It is important to measure each individual module's latency as well as the overall latency because not all cameras are going to be subjected to the same filtering algorithms. The additional information will enable us to predict the outcome latency based on the set of modules used. In order to measure the frame rate, we simply count the number of frames processed in a second.\\
 \par
 Our goal is to support independent image processing of three separate inputs. Rockwell Collins has given us some challenges outside of our requirements, which we will try to implement. We have multiple types of cameras with different lenses: two standard RGB cameras and one NIR (Near infrared) camera. The IR camera will be used to identify high intensity point lights, which we will then overlay onto the processed input from one of the RGB cameras. In the industry, this would be used to identify runway lights for landing aircraft. The third camera would provide a more focused look at the target. The first performance benchmark we need to determine is to simply get three simultaneous camera feeds running at the full 30 frame per second.\\
-
-\begin{center}
-	\begin{tabular} { | l | c | c | c | }
-	\hline
-	\multicolumn{ 4 } { | c | } { Frame Rate} \\
-	\hline
-	 	                                                      & One Camera       & Two Cameras         & Three Cameras \\ \hline
-	USB 3.0 with OpenCV                           & 37 FPS average &          		          &  \\ \hline
-	USB 2.0 with OpenCV                           & 11 FPS average  & 10 FPS consistent & 6 FPS \\ \hline
-	USB 3.0 with CUDA                               & 40 FPS               & 35 FPS                   & 32 FPS \\ \hline
-	USB 3.0 with CUDA and multithreaded & 100-110 FPS      & 50-70 FPS              & 45 FPS \\ \hline
-	\end{tabular}
-\end{center}
 
 \begin{figure}[!ht]
 \caption{Frame Rate Measurements}
@@ -290,22 +296,6 @@ Our goal is to support independent image processing of three separate inputs. Ro
 \includegraphics[width=0.7\textwidth]{images/latencyRGB.png}
 \end{figure}
 
-\par
-
-\begin{center}
-	\begin{tabular} { | l | c | c | c | }
-	\hline
-	\multicolumn{ 4 } { | c | } {Total Latency} \\
-	\hline
-	 	      & One Camera & Two Cameras & Three Cameras \\ \hline
-	USB 3.0 &	 16-30 ms       &          	       &  \\ \hline
-	USB 2.0 & 26-45 ms       & 38-56 ms        & 42-67 ms \\
-	\hline
-	\end{tabular}
-\end{center}
-
-\par
-Note: One-camera usb 2.0 results are shown for comparison purposes.\\
 \par
 After having poor initial results using OpenCV, we decided to completely implement our own vision processing platform that utilizes GPU optimized video processing with the CUDA library. Our new vision platform takes advantage of the shared memory of the CPU and GPU on the Jetson by using a CUDA feature called Zero Copy. This allows us to create buffers that are shared directly between the CPU and GPU, without having to copy the image every time it is used. We integrated this functionality directly into our camera input system by allocating a shared memory buffer and setting up PointGrey's colorspace conversion to output directly into this buffer. Once the image is in GPU memory, we then are able to perform extremely fast operations on it using the GPU. Finally, we map the CUDA buffer to an OpenGL texture, which is then drawn to the screen.\\
 \par
@@ -321,33 +311,12 @@ Our new CUDA-based system is extremely fast, and enables us to work on more adva
   
   \subsection{Implications of Beta Results}
   Now that our frame rate far exceeds our requirement, we can now focus on debugging, increasing stability, and implementing our stretch goals. Our current software works perfectly when it is running, but sometimes it will crash during exit because the GPU cleanup may occur before some of the threads operating on GPU memory have actually terminated. Once we fix these issues, we will then focus on additional improvements. We intend to create a CUDA color space conversion to replace the existing one, which should enable us to maximize our frame rate for all cameras. Then we will focus on our stretch goal of implementing a runway detection filter.
-
-\section{What is left to do}
-	
-   \subsection{Stretch Goals}
-	If time permits, we should have the ability to implement some other functionality that extends our requirements standard. We have developed a plan for some of these, and are considering them as stretch goals. A few of these features have already been implemented or are close to being meet:\\
-	\begin{itemize}
-		\item Display our video output stream on more than one monitor simultaneously  
-		\item Perform an object tracking filter
-		\item Design a real-world model to test our cameras on, such as with miniatures (two of our cameras have micro lenses which would be perfect for miniatures)
-		\item Display video operation metrics on screen; we currently log these to a file, but it would be easier to demonstrate the capabilities of the SBC if we displayed these on the video stream
-		\item Compare the Jetson with different single board computers, which would include re-implementing our code on different platforms and comparing their processing speed and hardware capabilities\\
-	\end{itemize}
-	
-  \subsection{Runway Demonstration}
-  For our runway demonstration, we still need to add the approach lights using LED strip lights. These lights will be powered and operated by a Raspberry Pi. We must also create a stable stand to put the cameras on and give them the proper height to match our scale requirements of a 3 degree pitch from the runway. 
-
-  \subsection{Implementing the Zoom Lens}
-  As part of our runway demo we will have a camera with a zoom lens fixed on the number painted on our runway. The zoom lens will provide a clearer image of the number on the runway for identification. In a real world scenario, the plane may be too far away for the pilot to see the number without a zoom camera, which creates a real world application of zoom lenses. The implementation of a zoom lens in our demo will show that single-board computers can handle practical applications like this.
-
-  \subsection{Fix Image Overlay}
-  In another part of our runway demonstration, we will use a zoom lens, an NIR camera, and an RGB camera to produce one output. Because the cameras are spaced far apart relative to the model runway, we will need to implement an overlay function inorder to combine the video produced by the three camera correctly. Figure 9 is a good example of the image we'd produce without an image overlay algorithm.
 	
    \section{Interesting Piece of Code}
-   The core of our program is the modular video processing pipeline. This polymorphic object-oriented system allows us to easily implement new video processing algorithms, support for different types of input devices, and new methods of outputting results. It is also responsible for measuring performance of each individual component.\\
+   The core of our program is the modular video processing pipeline. This polymorphic object-oriented system allows us to easily implement new video processing algorithms, support for different types of input devices, and new methods of outputting results. It is also responsible for measuring performance of each individual component.
    
    \subsection{New Pipeline system}
-   The pipeline class is the core of our new system, and provides a point of entry for the user of our code. It replaces the module system entirely to reduce complexity of implementation and provide more flexibility of use. It manages all of the multithreading, frame capture, OpenGL output, and CUDA setup and teardown, while providing an extremely simple means of implementing new functionality. It allows the algorithm developer to simply create a function that operates on a GPU buffer, and not have to worry about the details of parallel programming optimizations. 
+   The pipeline class is the core of our new system, and provides a point of entry for the user of our code. It replaces the module system entirely to reduce complexity of implementation and provide more flexibility of use. It manages all of the multithreading, frame capture, OpenGL output, and CUDA setup and teardown, while providing an extremely simple means of implementing new functionality. It allows the algorithm developer to simply create a function that operates on a GPU buffer, and not have to worry about the details of parallel programming optimizations. \\
    \par This code example shows how easy it is to create an application with our library. This application takes the input from two cameras, one RGB and one NIR. It then overlays edge detection from the RGB camera and point lights detected by the NIR camera onto the RGB camera's feed. This would be a complete application using our pipeline and image processing algorithm libraries. It also demonstrates how a user would integrate their own algorithm into a Hawkeye based application.
    \begin{lstlisting}
    #include <hawkeye_pipeline.h>
