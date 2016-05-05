@@ -319,38 +319,45 @@ Our new CUDA-based system is extremely fast, and enables us to work on more adva
    The pipeline class is the core of our new system, and provides a point of entry for the user of our code. It replaces the module system entirely to reduce complexity of implementation and provide more flexibility of use. It manages all of the multithreading, frame capture, OpenGL output, and CUDA setup and teardown, while providing an extremely simple means of implementing new functionality. It allows the algorithm developer to simply create a function that operates on a GPU buffer, and not have to worry about the details of parallel programming optimizations. \\
    \par This code example shows how easy it is to create an application with our library. This application takes the input from two cameras, one RGB and one NIR. It then overlays edge detection from the RGB camera and point lights detected by the NIR camera onto the RGB camera's feed. This would be a complete application using our pipeline and image processing algorithm libraries. It also demonstrates how a user would integrate their own algorithm into a Hawkeye based application.
    \begin{lstlisting}
+
 #include <hawkeye_pipeline.h>
 #include <hawkeye_algorithms.h>
-   
-	void my_algorithm(Pixel *data){
-  		// user implemented algorithm
-    	}
-   
-  	class MyApplication:public HawkEye_Pipeline{
-		Public:
-			Camera cameras[2];
-			MyApplication(){
-				cameras[0] = new Camera();
-				cameras[1] = new MonoCamera();
-				num_threads = 6;                 //define the starting number of threads
-				setup();                         //set up the pipeline
-                		}
-		
-			void pipeline(unsigned char *output){
-				Pixel *inputA = cameras[0].getFrame();   // Pixel is an unsigned char type
-				Pixel *inputB = cameras[1].getFrame();
-				copyImage(output,inputA);                // algorithms we have implemented
-				edgeDetectOverlay(output,inputA);        
-				lightDetectOverlay(output,inputB);
-                        		my_algorithm(output);
-			}
-    	};
 
-    	int main(){
-		MyApplication app;
-		app.addThread();       // add one more thread
-		app.removeThread();    // just kidding, let's decrease the thread count
-   	}
+void
+my_algorithm (Pixel * data)
+{
+  // user implemented algorithm
+}
+
+class MyApplication:public HawkEye_Pipeline
+{
+  Public:Camera cameras[2];
+  MyApplication ()
+  {
+    cameras[0] = new Camera ();
+    cameras[1] = new MonoCamera ();
+    num_threads = 6;		//define the starting number of threads
+    setup ();			//set up the pipeline
+  }
+
+  void pipeline (unsigned char *output)
+  {
+    Pixel *inputA = cameras[0].getFrame ();	// Pixel is an unsigned char type
+    Pixel *inputB = cameras[1].getFrame ();
+    copyImage (output, inputA);	// algorithms we have implemented
+    edgeDetectOverlay (output, inputA);
+    lightDetectOverlay (output, inputB);
+    my_algorithm (output);
+  }
+};
+
+int
+main ()
+{
+  MyApplication app;
+  app.addThread ();		// add one more thread
+  app.removeThread ();		// just kidding, let's decrease the thread count
+}
    \end{lstlisting}
    
    \par As you can see, creating an application with our library is extremely easy to do. The setup for the processing algorithms is very straightforward and linear, while when executed, six frames would be simultaneously and asynchronously processing at the same time. Our software handles all of the synchronization and scheduling details, as well as providing high speed camera input and openGL-accelerated output. 
