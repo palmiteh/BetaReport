@@ -322,33 +322,6 @@ Our new CUDA-based system is extremely fast, and enables us to work on more adva
 
 #include <hawkeye_pipeline.h>
 #include <hawkeye_algorithms.h>
-<<<<<<< HEAD
-   
-	void my_algorithm(Pixel *data){
-  		// user implemented algorithm
-	}
-   
-	class MyApplication:public HawkEye_Pipeline{
-		Public:
-			Camera cameras[2];
-			MyApplication(){
-				cameras[0] = new Camera();
-				cameras[1] = new MonoCamera();
-				num_threads = 6;                 //define the starting number of threads
-				setup();                         //set up the pipeline
-                		}
-		
-			void pipeline(unsigned char *output){
-				Pixel *inputA = cameras[0].getFrame();   // Pixel is an unsigned char type
-				Pixel *inputB = cameras[1].getFrame();
-				copyImage(output,inputA);                // algorithms we have implemented
-				edgeDetectOverlay(output,inputA);        
-				lightDetectOverlay(output,inputB);
-                        		my_algorithm(output);
-			}
-    	};
-=======
->>>>>>> 183db44eb5977fda0bb62efb72ec2f80c6e23c60
 
 void
 my_algorithm (Pixel * data)
