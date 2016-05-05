@@ -257,6 +257,17 @@ Our goal is to support independent image processing of three separate inputs. Ro
 	\end{tabular}
 \end{center}
 
+\begin{figure}[!ht]
+\caption{Frame Rate Measurements}
+\centering
+\includegraphics[width=0.7\textwidth]{images/frameRate.png}
+\end{figure}
+\begin{figure}[!ht]
+\caption{Latency Measurements for RGB Camera Pipeline}
+\centering
+\includegraphics[width=0.7\textwidth]{images/latencyRGB.png}
+\end{figure}
+
 \par
 
 \begin{center}
@@ -281,10 +292,10 @@ Using CUDA for our image processing system allowed us to meet high performance m
 Our new CUDA-based system is extremely fast, and enables us to work on more advanced image processing algorithms. Our current software includes multiple combination filters which blend two images together by averaging their color values, as well as a edge detection filter that was provided by NVIDIA in their CUDA sample code. Even with three camera inputs, two combination filters, and an edge detection filter, we still achieve roughly 35 frames per second without even coming close to our latency requirement. The image in figure 10 below displays this frame rate and the high quality of the image achieved in the output video stream from our Jetson TX1 and USB 3.0 PointGrey camera.\\
 
 \begin{figure}[!ht]
-  \caption{Video output from the TX1 running at ~35 fps}
-	  \centering
-		    \includegraphics[width=0.6\textwidth]{images/exampleOutputNormalBeta.jpg}
-				\end{figure}
+\caption{Video output from the TX1 running at ~35 fps}
+\centering
+\includegraphics[width=0.6\textwidth]{images/exampleOutputNormalBeta.jpg}
+\end{figure}
   
   \subsection{Implications of Beta Results}
   Now that our frame rate far exceeds our requirement, we can now focus on debugging, increasing stability, and implementing our stretch goals. Our current software works perfectly when it is running, but sometimes it will crash during exit because the GPU cleanup may occur before some of the threads operating on GPU memory have actually terminated. Once we fix these issues, we will then focus on additional improvements. We intend to create a CUDA color space conversion to replace the existing one, which should enable us to maximize our frame rate for all cameras. Then we will focus on our stretch goal of implementing a runway detection filter.
@@ -308,7 +319,7 @@ Our new CUDA-based system is extremely fast, and enables us to work on more adva
   As part of our runway demo we will have a camera with a zoom lens fixed on the number painted on our runway. The zoom lens will provide a clearer image of the number on the runway for identification. In a real world scenario, the plane may be too far away for the pilot to see the number without a zoom camera, which creates a real world application of zoom lenses. The implementation of a zoom lens in our demo will show that single-board computers can handle practical applications like this.
 
   \subsection{Fix Image Overlay}
-  In another part of our runway demonstration, we will use a zoom lens, an NIR camera, and an RGB camera to produce one output. Because the cameras are spaced far apart relative to the model runway, we will need to implement an overlay function inorder to combine the video produced by the three camera correctly.
+  In another part of our runway demonstration, we will use a zoom lens, an NIR camera, and an RGB camera to produce one output. Because the cameras are spaced far apart relative to the model runway, we will need to implement an overlay function inorder to combine the video produced by the three camera correctly. Figure 9 is a good example of the image we'd produce without an image overlay algorithm.
 	
    \section{Interesting Piece of Code}
    The core of our program is the modular video processing pipeline. This polymorphic object-oriented system allows us to easily implement new video processing algorithms, support for different types of input devices, and new methods of outputting results. It is also responsible for measuring performance of each individual component.\\
