@@ -297,23 +297,32 @@ After having poor initial results using OpenCV, we decided to completely impleme
 \par
 Using CUDA for our image processing system allowed us to meet high performance metrics, as we were able to add new filters with virtually no effect on frame rate or latency. Even a seemingly intensive edge detection algorithm causes a reduction of less than 1 frame per second. However, we were still limited on our frame rate by the input module. The 105fps we are now acquiring is acceptable for our requirements, but our cameras are capable of much greater frame rates: up to 166fps at 1080p. By inserting timing measurements into each step in the input module, we were able to determine that the main cause of slowdown is the PointGrey colorspace conversion, which can take up to 30ms to complete depending on the camera. This initially limited us to lower frame rates, but by threading the input module we were able to perform multiple conversions at the same time. This enabled us to achieve much higher frame rates, up to 110fps with a single camera. Our latency increased slightly to about 40ms, but this is still within our 100ms acceptable range.\\
 \par
-Our new CUDA-based system is extremely fast, and enables us to work on more advanced image processing algorithms. Our current software includes multiple combination filters which blend two images together by averaging their color values, as well as a edge detection filter that was provided by NVIDIA in their CUDA sample code. Even with three camera inputs, two combination filters, and an edge detection filter, we still achieve roughly 35 frames per second without even coming close to our latency requirement. The image in figure 10 below displays this frame rate and the high quality of the image achieved in the output video stream from our Jetson TX1 and USB 3.0 PointGrey camera.\\
+Our new CUDA-based system is extremely fast, and enables us to work on more advanced image processing algorithms. Our current software includes multiple combination filters which blend two images together by averaging their color values, as well as a edge detection filter that was provided by NVIDIA in their CUDA sample code. Even with three camera inputs, two combination filters, and an edge detection filter, we still achieve roughly 85 frames per second without even coming close to our latency requirement. The image in figure 10 below displays this frame rate and the high quality of the image achieved in the output video stream from our Jetson TX1 and USB 3.0 PointGrey camera.\\
+\par
+Since the beta release, we have focused on decreasing our latency and increasing throughput. Our new method of measuring latency includes both the camera hardware and the monitor latency. This means that our new measurements are much higher than the original results. Our original CUDA based module has under 25ms latency, however the video feed is only monochrome. With our new RGB conversion algorithm, the output was slightly over the 100ms limit. By making some improvements that were suggested by our sponsors, we were able to bring the latency down to just over 60ms. Our frame rate is still around 90fps, which is triple the requirement, and if we reduce the frame rate it also reduces the latency. Additionally, the latency and frame rate are very minimally affected by having multiple cameras compared to one, so even with our multi-camera system the latency is still low.
+\par
+After our beta release, we also worked on eliminating a number of bugs. We had been having random segfaults and occasional system crashes on program exit. We figured out that the segmentation faults were because of the software trying to use the camera before it had been fully initialized, so we added in a delay that allows the camera to boot up before capturing video from it. The system crashes were because of memory leaks in the CUDA part of the application, which would build up after running the program multiple times. Our new software properly cleans up all allocated GPU buffers and also resets the hardware's state upon exit.
 
 \begin{figure}[!ht]
-\caption{Video output from the TX1 running at ~35 fps}
+\caption{Video output from the TX1 running at ~85 fps}
 \centering
 \includegraphics[width=0.6\textwidth]{images/exampleOutputNormalBeta.jpg}
 \end{figure}
+<<<<<<< HEAD
+  	
+=======
   
   \subsection{Implications of Release Results}
   Our research goals are complpete. The frame rate on the Jetson TX1 far exceeds our requirement, meaning that the single board computers are a viable option to replace FPGAs. We have gathered the necessary data to convince prove that the Jetson TX1 provides the needed metrics defined by our client. We can now focus on debugging, increasing stability, and implementing our stretch goals. Our current software works perfectly when it is running, but sometimes it will crash during exit because the GPU cleanup may occur before some of the threads operating on GPU memory have actually terminated. Once we fix these issues, we will then focus on additional improvements. We intend to create a CUDA color space conversion to replace the existing one, which should enable us to maximize our frame rate for all cameras. Then we will focus on our stretch goal of implementing a runway detection filter.
 	
+>>>>>>> c98f5d1e631ba14b6e583c3f8bf4136883327b42
    \section{Interesting Piece of Code}
    The core of our program is the modular video processing pipeline. This polymorphic object-oriented system allows us to easily implement new video processing algorithms, support for different types of input devices, and new methods of outputting results. It is also responsible for measuring performance of each individual component.
    
    \subsection{New Pipeline system}
    The pipeline class is the core of our new system, and provides a point of entry for the user of our code. It replaces the module system entirely to reduce complexity of implementation and provide more flexibility of use. It manages all of the multithreading, frame capture, OpenGL output, and CUDA setup and teardown, while providing an extremely simple means of implementing new functionality. It allows the algorithm developer to simply create a function that operates on a GPU buffer, and not have to worry about the details of parallel programming optimizations. \\
    \par This code example shows how easy it is to create an application with our library. This application takes the input from two cameras, one RGB and one NIR. It then overlays edge detection from the RGB camera and point lights detected by the NIR camera onto the RGB camera's feed. This would be a complete application using our pipeline and image processing algorithm libraries. It also demonstrates how a user would integrate their own algorithm into a Hawkeye based application.
+      \newpage
    \begin{lstlisting}
 
 #include <hawkeye_pipeline.h>
