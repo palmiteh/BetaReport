@@ -250,11 +250,7 @@ Development of this system is an iterative process. We first explored the modula
    Once we begin working with our runway model demonstration, we were able to see that our two standard camera lenses were blurry for far away object but very good with near objects. Almost so good that you can see someones finger print when held to the camera. No matter the adjustments we made to the lens, we were not able to get a clear image. Our sponsor recommended using spacer to increase the focal length of the camera and lens system, but even once the spacers were applied it made the focal length even worse giving us a very blurry image. This problem has not been resolved yet and is still on going to create a sharper image. We have discussed using that lens on the NIR camera as the LED lights will be at a closer range to the cameras. 
    
    \subsection{System and Code Bugs}
-	We had a few code bugs in the system that caused strange output or system failure.
-	\begin{itemize}
-		\item System froze during program exit: Our system didn't uninitialize the hardware properly and ended up freezing up the hardware. This wasn't difficult to fix and simply required us to create an exit function.
-		\item Camera output is split: Another issue while quitting our application is improper reinitialization of the cameras. This can cause cameras to act strangely upon restart, such as partitioning their image output in half before sending it to the screen. We have determined this to be a problem with our hardware and is fixed by simply never rebooting the system during demo.
-	\end{itemize}
+	We had a few code bugs in the system that caused strange output and sometimes system failure. In an earlier version of our code, we found that our system froze during program exit, this was because our system didn't uninitialize the hardware properly and ended up freezing up the hardware. This wasn't difficult to fix and simply required us to create an exit function. Another issue we had was that our camera output was splitting. This was due to improper reinitialization of the cameras after quitting our application. This can cause cameras to act strangely upon restart, such as partitioning their image output in half before sending it to the screen. We determined this to be a problem with our hardware and fixed it by simply never rebooting the system during demo.
 	
    
 \section{What is left to do}
@@ -312,7 +308,14 @@ After our beta release, we also worked on eliminating a number of bugs. We had b
 \centering
 \includegraphics[width=0.6\textwidth]{images/exampleOutputNormalBeta.jpg}
 \end{figure}
+<<<<<<< HEAD
   	
+=======
+  
+  \subsection{Implications of Release Results}
+  Our research goals are complpete. The frame rate on the Jetson TX1 far exceeds our requirement, meaning that the single board computers are a viable option to replace FPGAs. We have gathered the necessary data to convince prove that the Jetson TX1 provides the needed metrics defined by our client. We can now focus on debugging, increasing stability, and implementing our stretch goals. Our current software works perfectly when it is running, but sometimes it will crash during exit because the GPU cleanup may occur before some of the threads operating on GPU memory have actually terminated. Once we fix these issues, we will then focus on additional improvements. We intend to create a CUDA color space conversion to replace the existing one, which should enable us to maximize our frame rate for all cameras. Then we will focus on our stretch goal of implementing a runway detection filter.
+	
+>>>>>>> c98f5d1e631ba14b6e583c3f8bf4136883327b42
    \section{Interesting Piece of Code}
    The core of our program is the modular video processing pipeline. This polymorphic object-oriented system allows us to easily implement new video processing algorithms, support for different types of input devices, and new methods of outputting results. It is also responsible for measuring performance of each individual component.
    
