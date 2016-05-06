@@ -109,8 +109,8 @@
 		\end{itemize}
 	Lenses (figure 1): 
 		\begin{itemize}
-		\item EVS-3000 (figure 6)
-		\item 2 x LS-TP-08 (Standard) (figure 7)\\
+		\item EVS-3000 
+		\item 2 x LS-TP-08 (Standard)\\
 		\end{itemize}					
 	Single Board Computers: 
 		\begin{itemize}
@@ -218,7 +218,7 @@ Development of this system is an iterative process. We first explored the modula
         \paragraph{Threshold based overlay filter}
         In order to make use of the edge detection and also to provide a means to overlay additional information, such as point light locations found with our IR camera, we implemented an overlay filter which highlights all pixels in an image based on all points above a certain value in another input (such as the detected edges). This provides a more useful means of display than simply the raw output of the processing algorithms. For example, highlighting runway markings on a camera feed while still showing the original image.
         \paragraph{Parallax effect correction}
-        Because we are using multiple cameras to provide a single viewpoint, and because our demo for Expo is very small, there is a noticeable offset between the different cameras. Because our runway demonstration is a flat surface and has fixed cameras, we devised a means of virtually aligning two different cameras so that their output images appear to be from the same viewpoint. This is because our cameras are spaced more than two inches apart, whilst the runway is only four inches wide. In a real world scenario this would be unnecessary as the runway is over 150 feet wide and the cameras would still only be two inches apart, but for our demonstration to work properly we needed to correct for this significant variation. 
+        Because we are using multiple cameras to provide a single viewpoint, and because our demo for Expo is very small, there is a noticeable offset between the different cameras. Because our runway demonstration is a flat surface and has fixed cameras, we devised a means of virtually aligning two different cameras so that their output images appear to be from the same viewpoint. This is because our cameras are spaced more than two inches apart, whilst the runway is only four inches wide. In a real world scenario this would be unnecessary as the runway is over 150 feet wide and the cameras would still only be two inches apart, but for our demonstration to work properly we needed to correct for this significant variation. Figure 9 shows the image offset we would receive before inputing it to the parallax effect correction. After the effect was applied the image would appear as if only one camera had taken the video stream, aligning the multiple images seamlessly. 
 
 \begin{figure}[!ht]
   \caption{Video output from the TX1 overlaying three USB 3.0 video streams}
@@ -250,7 +250,7 @@ Development of this system is an iterative process. We first explored the modula
    Once we began working with our runway model demonstration, we were able to see that two of our standard camera lenses were blurry for far away objects but very good with closer objects. No matter the adjustments we made to the lens, we were not able to get a clear image at a distance. Our sponsor recommended using spacers to increase the focal length of the camera and lens system, but when the spacers were applied, it made the focal length even worse. This problem has not been resolved yet and we are still trying to create a sharper image. We have discussed using that lens on the NIR camera as the LED lights will be at a closer range to the cameras. 
    
    \subsection{System and Code Bugs}
-	We had a few code bugs in the system that caused strange output and sometimes system failure. In an earlier version of our code, we found that our system froze during program exit, this was because our system didn't uninitialize the hardware properly and ended up freezing up the hardware. This wasn't difficult to fix and simply required us to create an exit function. Another issue we had was that our camera output was splitting. This was due to improper reinitialization of the cameras after quitting our application. This can cause cameras to act strangely upon restart, such as partitioning their image output in half before sending it to the screen. We determined this to be a problem with our hardware and fixed it by including a software exit which properly deinitializes the cameras on exit.
+	We had a few code bugs in the system that caused strange output and sometimes system failure. In an earlier version of our code, we found that our system froze during program exit, this was because our system didn't uninitialize the hardware properly and ended up freezing up the hardware. This wasn't difficult to fix and simply required us to create an exit function. Another issue we had was that our camera output was splitting. This was due to improper reinitialization of the cameras after quitting our application. This can cause cameras to act strangely upon restart, such as partitioning their image output in half before sending it to the screen. We determined this to be a problem with our hardware and fixed it by including a software exit which properly uninitializes the cameras on exit.
 	
    
 \section{What is left to do}
@@ -280,25 +280,28 @@ In order to measure the latency of our application, our software contains a deta
 \par
 Our goal is to support independent image processing of three separate inputs. Rockwell Collins has given us some challenges outside of our requirements, which we will try to implement. We have multiple types of cameras with different lenses: two standard RGB cameras and one NIR (Near infrared) camera. The IR camera will be used to identify high intensity point lights, which we will then overlay onto the processed input from one of the RGB cameras. In the industry, this would be used to identify runway lights for landing aircraft. The third camera would provide a more focused look at the target. The first performance benchmark we need to determine is to simply get three simultaneous camera feeds running at the full 30 frame per second.\\
 
-\begin{figure}[!ht]
-\caption{Frame Rate Measurements}
-\centering
-\includegraphics[width=0.7\textwidth]{images/frameRate.png}
-\end{figure}
-\begin{figure}[!ht]
-\caption{Latency Measurements for RGB Camera Pipeline}
-\centering
-\includegraphics[width=0.7\textwidth]{images/latencyRGB.png}
-\end{figure}
-
 \par
 After having poor initial results using OpenCV, we decided to completely implement our own vision processing platform that utilizes GPU optimized video processing with the CUDA library. Our new vision platform takes advantage of the shared memory of the CPU and GPU on the Jetson by using a CUDA feature called Zero Copy. This allows us to create buffers that are shared directly between the CPU and GPU, without having to copy the image every time it is used. We integrated this functionality directly into our camera input system by allocating a shared memory buffer and setting up PointGrey's colorspace conversion to output directly into this buffer. Once the image is in GPU memory, we then are able to perform extremely fast operations on it using the GPU. Finally, we map the CUDA buffer to an OpenGL texture, which is then drawn to the screen.\\
 \par
 Using CUDA for our image processing system allowed us to meet high performance metrics, as we were able to add new filters with virtually no effect on frame rate or latency. Even a seemingly intensive edge detection algorithm causes a reduction of less than 1 frame per second. However, we were still limited on our frame rate by the input module. The 85fps we are now acquiring is acceptable for our requirements, but our cameras are capable of much greater frame rates: up to 166fps at 1080p. By inserting timing measurements into each step in the input module, we were able to determine that the main cause of slowdown is the PointGrey colorspace conversion, which can take up to 30ms to complete depending on the camera. This initially limited us to lower frame rates, but by threading the input module we were able to perform multiple conversions at the same time. This enabled us to achieve much higher frame rates, up to 95fps with a single camera. Our latency increased slightly to about 65ms, but this is still within our 100ms acceptable range.\\
 \par
 Our new CUDA-based system is extremely fast, and enables us to work on more advanced image processing algorithms. Our current software includes multiple combination filters which blend two images together by averaging their color values, as well as a edge detection filter that was provided by NVIDIA in their CUDA sample code. Even with three camera inputs, two combination filters, and an edge detection filter, we still achieve roughly 85 frames per second without even coming close to our latency limit. The image in figure 10 below displays this frame rate and the high quality of the image achieved in the output video stream from our Jetson TX1 and USB 3.0 PointGrey camera.\\
+
+\begin{figure}[!ht]
+\caption{Frame Rate Measurements}
+\centering
+\includegraphics[width=0.7\textwidth]{images/frameRate.png}
+\end{figure}
+
 \par
-Since the beta release, we have focused on decreasing our latency and increasing throughput. Our new method of measuring latency includes both the camera hardware and the monitor latency. This means that our new measurements are much higher than the original results. Our original CUDA based module had under 25ms latency, however the video feed is only monochrome. With our new RGB conversion algorithm, the output was slightly over the 100ms limit. By making some improvements that were suggested by our sponsors, we were able to bring the latency down to just over 60ms. Our frame rate is still around 90fps, which is triple the requirement, and if we reduce the frame rate it also reduces the latency. Additionally, the latency and frame rate are very minimally affected by having multiple cameras compared to one, so even with our multi-camera system the latency is still low.
+Since the beta release, we have focused on decreasing our latency and increasing throughput. Our new method of measuring latency includes both the camera hardware and the monitor latency. This means that our new measurements are much higher than the original results. Our original CUDA based module had under 25ms latency, however the video feed is only monochrome. With our new RGB conversion algorithm, the output was slightly over the 100ms limit. By making some improvements that were suggested by our sponsors, we were able to bring the latency down to just over 66ms (see figure 11). Our frame rate is still around 90fps, which is triple the requirement, and if we reduce the frame rate it also reduces the latency. Additionally, the latency and frame rate are very minimally affected by having multiple cameras compared to one, so even with our multi-camera system the latency is still low.
+
+\begin{figure}[!ht]
+\caption{Latency Measurements for RGB Camera Pipeline}
+\centering
+\includegraphics[width=0.7\textwidth]{images/latencyRGB.png}
+\end{figure}
+
 \par
 After our beta release, we also worked on eliminating a number of bugs. We had been having random segfaults and occasional system crashes on program exit. We figured out that the segmentation faults were because of the software trying to use the camera before it had been fully initialized, so we added in a delay that allows the camera to boot up before capturing video from it. The system crashes were because of memory leaks in the CUDA part of the application, which would build up after running the program multiple times. Our new software properly cleans up all allocated GPU buffers and also resets the hardware's state upon exit.
 
@@ -356,7 +359,7 @@ main ()
 {
   MyApplication app;
   app.addThread ();		// add one more thread
-  app.removeThread ();		// just kidding, let's decrease the thread count
+  app.removeThread ();	// just kidding, let's decrease the thread count
 }
    \end{lstlisting}
    
